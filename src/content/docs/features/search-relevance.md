@@ -3,8 +3,6 @@ title: Search Relevance
 description: Learn about Cosdata's powerful search relevance features
 ---
 
-# Search Relevance
-
 Cosdata provides advanced search relevance capabilities to ensure your users find exactly what they're looking for.
 
 ## Hybrid Search

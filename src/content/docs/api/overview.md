@@ -3,8 +3,6 @@ title: API Overview
 description: Overview of the Cosdata API
 ---
 
-# Cosdata API Overview
-
 Cosdata provides a comprehensive API for interacting with your vector database. This overview will help you understand the key concepts and endpoints.
 
 ## API Endpoints
@@ -13,6 +11,8 @@ Cosdata offers both REST and gRPC interfaces:
 
 - **REST API**: Available at `http://localhost:8443/api/v1`
 - **gRPC API**: Available at `localhost:50051`
+
+For the most up-to-date API implementation, you can also check the <a href="https://github.com/cosdata/cosdata" target="_blank" rel="noopener noreferrer">Cosdata GitHub repository</a>.
 
 ## Authentication
 
@@ -60,6 +60,8 @@ Cosdata provides official client libraries to simplify integration:
 - **JavaScript SDK**: Coming soon
 - **Java SDK**: Coming soon
 
+All client libraries are open-source and available in our <a href="https://github.com/cosdata/cosdata-sdk-python" target="_blank" rel="noopener noreferrer">GitHub repository</a>.
+
 ## Error Handling
 
 The API returns standard HTTP status codes:
@@ -69,6 +71,14 @@ The API returns standard HTTP status codes:
 - `401 Unauthorized`: Authentication failed
 - `404 Not Found`: Resource not found
 - `500 Internal Server Error`: Server error
+
+## Support and Community
+
+If you have questions about the API or need help with implementation:
+
+- Check the <a href="https://github.com/cosdata/cosdata" target="_blank" rel="noopener noreferrer">GitHub repository</a> for the latest code and examples
+- Join our <a href="https://discord.gg/XMdtTBrtKT" target="_blank" rel="noopener noreferrer">Discord community</a> for real-time support and discussions
+- Report issues or request features through <a href="https://github.com/cosdata/cosdata/issues" target="_blank" rel="noopener noreferrer">GitHub Issues</a>
 
 ## Next Steps
 

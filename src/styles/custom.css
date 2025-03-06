@@ -1,0 +1,178 @@
+/* Custom styles for Cosdata documentation to match main website */
+
+/* Color variables to match Cosdata branding */
+:root {
+  --cosdata-blue: #2673ff;
+  --cosdata-pink: #ff3366;
+  --cosdata-light-blue: #e8f0ff;
+  --cosdata-dark: #1a1a2e;
+  --cosdata-gradient-bg: linear-gradient(135deg, #e8eaf6 0%, #d1e1ff 100%);
+}
+
+/* Apply brand styling to the header */
+.sl-header {
+  background: var(--cosdata-gradient-bg);
+  border-bottom: 1px solid rgba(38, 115, 255, 0.1);
+}
+
+/* Style the site title to match Cosdata branding */
+.site-title {
+  font-weight: 700;
+  color: var(--cosdata-blue);
+}
+
+/* Style headings to match Cosdata branding */
+.sl-markdown-content h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--cosdata-pink);
+  margin-bottom: 1.5rem;
+}
+
+.sl-markdown-content h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--cosdata-blue);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.sl-markdown-content h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--cosdata-dark);
+}
+
+/* Style links to match Cosdata branding */
+.sl-markdown-content a:not(.anchor) {
+  color: var(--cosdata-blue);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.sl-markdown-content a:not(.anchor):hover {
+  color: var(--cosdata-pink);
+  text-decoration: underline;
+}
+
+/* Style code blocks to match Cosdata branding */
+.sl-markdown-content pre {
+  background-color: var(--cosdata-dark);
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Style inline code */
+.sl-markdown-content code:not(pre code) {
+  color: var(--cosdata-pink);
+  background-color: rgba(255, 51, 102, 0.1);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+}
+
+/* Style blockquotes */
+.sl-markdown-content blockquote {
+  border-left: 4px solid var(--cosdata-blue);
+  background-color: var(--cosdata-light-blue);
+  padding: 1rem;
+  border-radius: 0 8px 8px 0;
+}
+
+/* Style the sidebar */
+.sl-sidebar {
+  --sl-sidebar-width: 17rem;
+  background-color: white;
+  border-right: 1px solid rgba(38, 115, 255, 0.1);
+}
+
+/* Style sidebar navigation items */
+.sl-sidebar a {
+  color: var(--cosdata-dark);
+  font-weight: 500;
+}
+
+.sl-sidebar a:hover,
+.sl-sidebar a[aria-current="page"] {
+  color: var(--cosdata-blue);
+}
+
+/* Style buttons to match Cosdata branding */
+button, .button {
+  background-color: var(--cosdata-blue);
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+button:hover, .button:hover {
+  background-color: var(--cosdata-pink);
+}
+
+/* Adjust padding on the main content container */
+.sl-container {
+  --sl-content-margin-inline: 1.25rem;
+}
+
+/* Increase the max-width of the content area to use more space */
+.sl-markdown-content {
+  max-width: 100%;
+  padding-right: 1rem;
+}
+
+/* Make sure code blocks don't overflow on smaller screens */
+.sl-markdown-content pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Improve table readability */
+.sl-markdown-content table {
+  display: table;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.sl-markdown-content table th {
+  background-color: var(--cosdata-light-blue);
+  color: var(--cosdata-dark);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.75rem 1rem;
+}
+
+.sl-markdown-content table td {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid rgba(38, 115, 255, 0.1);
+}
+
+/* Ensure the right sidebar (table of contents) doesn't take too much space */
+.right-sidebar {
+  --sl-sidebar-width: 16rem;
+  background-color: white;
+  border-left: 1px solid rgba(38, 115, 255, 0.1);
+}
+
+/* Adjust the overall page layout for better space utilization */
+.sl-container > .sl-flex {
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+
+/* Media query for larger screens to optimize layout */
+@media (min-width: 1200px) {
+  .sl-container {
+    --sl-content-width: 100%;
+  }
+  
+  /* Reduce right sidebar padding to use more space */
+  .right-sidebar-container {
+    padding-left: 1rem;
+  }
+} 

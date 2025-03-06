@@ -3,8 +3,6 @@ title: Python SDK
 description: How to use the Cosdata Python SDK to interact with the vector database
 ---
 
-# Cosdata Python SDK
-
 The Cosdata Python SDK provides a convenient way to interact with the Cosdata vector database from Python applications. This guide will help you get started with the SDK and show you how to perform common operations.
 
 ## Installation

@@ -3,11 +3,11 @@ title: Vector Database REST API
 description: Complete REST API specification for the Cosdata vector database service
 ---
 
-# Vector Database REST API Specification
-
 ## Overview
 
 This document describes the complete REST API specification for the Cosdata vector database service, supporting high-dimensional vector storage, retrieval, and similarity search with transactional guarantees.
+
+> **Note**: For the latest API implementation details, refer to our <a href="https://github.com/cosdata/cosdata" target="_blank" rel="noopener noreferrer">GitHub repository</a>. For questions or support, join our <a href="https://discord.gg/XMdtTBrtKT" target="_blank" rel="noopener noreferrer">Discord community</a>.
 
 ## Base URL and Authentication
 
@@ -408,4 +408,132 @@ All API errors follow a consistent format:
 1. Use appropriate k values
 2. Include relevant metadata
 3. Choose proper similarity metrics
-4. Consider index parameters 
+4. Consider index parameters
+
+## Implementation Notes
+
+### Transaction Implementation
+
+* Uses MVCC (Multi-Version Concurrency Control)
+* Each transaction has isolated snapshot view
+* Two-phase commit protocol
+* Automatic rollback on failures
+
+### Vector Storage
+
+* Optimized for high-dimensional data
+* Efficient similarity search
+* Configurable indexing strategies
+* Metadata indexing support
+
+### Performance Considerations
+
+* Index build time vs query performance
+* Memory usage vs search speed
+* Transaction overhead
+* Batch operation efficiency
+
+## Sample Workflows
+
+### Batch Vector Insertion
+
+```python
+# 1. Login and get token
+login_response = login()
+token = login_response.text
+
+# 2. Create collection
+create_collection_response = create_db(
+    name="testdb",
+    dimension=1024
+)
+
+# 3. Start transaction
+transaction_response = create_transaction("testdb")
+transaction_id = transaction_response["transaction_id"]
+
+# 4. Batch insert vectors
+vectors = [
+    {
+        "id": f"vec_{i}",
+        "values": [...],
+        "metadata": {"label": f"example_{i}"}
+    }
+    for i in range(100)
+]
+
+try:
+    upsert_in_transaction("testdb", transaction_id, vectors)
+    commit_transaction("testdb", transaction_id)
+except Exception as e:
+    abort_transaction("testdb", transaction_id)
+    raise e
+```
+
+### Search Workflow
+
+```python
+# 1. Prepare search vector
+search_vector = [0.1, 0.2, ...]
+
+# 2. Perform search
+search_response = ann_vector(
+    1,
+    "testdb",
+    search_vector
+)
+
+# 3. Process results
+results = search_response[1]["RespVectorKNN"]["knn"]
+for vector_id, similarity in results:
+    print(f"Vector {vector_id}: {similarity}")
+```
+
+## API Version and Compatibility
+
+* Current API Version: 1.0
+* Base Path: /vectordb
+* Backwards Compatibility: Guaranteed for minor versions
+* Deprecation Policy: Minimum 6 months notice
+
+## Security Considerations
+
+### Authentication
+
+* JWT-based authentication
+* Token expiration and renewal
+* Role-based access control
+
+### Data Protection
+
+* TLS encryption required
+* Vector data encryption at rest
+* Secure credential handling
+
+### Access Control
+
+* Collection-level permissions
+* Operation-level authorization
+* Transaction isolation
+
+## Monitoring and Diagnostics
+
+### Available Metrics
+
+* Transaction success/failure rates
+* Query latency
+* Index performance
+* Resource utilization
+
+### Health Checks
+
+1. API endpoint health
+2. Database connectivity
+3. Index status
+4. Transaction manager status
+
+## Additional Resources
+
+- **Source Code**: Explore the implementation in our <a href="https://github.com/cosdata/cosdata" target="_blank" rel="noopener noreferrer">GitHub repository</a>
+- **Community Support**: Join our <a href="https://discord.gg/XMdtTBrtKT" target="_blank" rel="noopener noreferrer">Discord server</a> for discussions and help
+- **Issue Reporting**: Report bugs or request features through <a href="https://github.com/cosdata/cosdata/issues" target="_blank" rel="noopener noreferrer">GitHub Issues</a> 
