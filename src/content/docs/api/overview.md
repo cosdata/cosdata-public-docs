@@ -58,7 +58,6 @@ Cosdata provides official client libraries to simplify integration:
 
 - **Python SDK**: A Python client library for Cosdata
 - **JavaScript SDK**: Coming soon
-- **Java SDK**: Coming soon
 
 All client libraries are open-source and available in our <a href="https://github.com/cosdata/cosdata-sdk-python" target="_blank" rel="noopener noreferrer">GitHub repository</a>.
 
