@@ -49,6 +49,7 @@ export default defineConfig({
             { label: 'Cos Graph Query Language', link: '/api/cosquery/' },
             { label: 'REST API', link: '/api/documentation/' },
             { label: 'Python SDK', link: '/api/python-sdk/' },
+            { label: 'Node.js SDK', link: '/api/node-sdk/' },
           ],
         },
       ],
