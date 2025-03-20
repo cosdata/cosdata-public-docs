@@ -5,50 +5,67 @@ description: Install Cosdata and get up and running quickly with your first vect
 
 This guide will walk you through installing Cosdata and running your first test to verify everything is working correctly.
 
-## Prerequisites
+## Installation Options
 
-Before installing Cosdata, ensure you have the following:
-
-- Git
-- Rust (version 1.81.0 or higher)
-- Cargo (Rust's package manager, toolchain version 1.81.0 or higher)
-- A C++ compiler (GCC 4.8+ or Clang 3.4+)
-- Python 3.8+ (for running test scripts)
-
-## Installation Steps
-
-### Building Cosdata as a Developer
-
-1. **Clone the Repository**
-
-   ```bash
-   git clone https://github.com/cosdata/cosdata.git
-   cd cosdata
-   ```
-
-2. **Build the Project**
-
-   ```bash
-   cargo build --release
-   ```
-
-3. **Install the Binary**
-
-   ```bash
-   cargo install --path .
-   ```
-
-> **Need Help?** If you encounter any issues during installation, join our <a href="https://discord.gg/XMdtTBrtKT" target="_blank" rel="noopener noreferrer">Discord community</a> for real-time support from the Cosdata team and community members.
-
-### Running Cosdata
-
-Start the Cosdata server with your admin key:
-
+### 1. Quick Install (Linux)
+For a simple one-step installation on Linux, run:
 ```bash
-cosdata --admin-key <your-admin-key>
+curl -sL https://cosdata.io/install.sh | bash
 ```
 
-You should see log lines similar to the following:
+This script will handle all dependencies and set up Cosdata automatically.
+
+### 2. Docker Install (Mac & Windows)
+For **Mac & Windows** users, we recommend using our Docker-based installation:
+
+1. Ensure **Docker** is installed and running
+2. Build and run the Cosdata container:
+
+```bash
+# Clone the repository
+git clone https://github.com/cosdata/cosdata.git
+cd cosdata
+
+# Build the image
+docker build -t cosdata/cosdata:latest .
+
+# Run the container
+docker run -d \
+  --name cosdata-server \
+  -e COSDATA_ADMIN_KEY=your_admin_key \
+  -p 8443:8443 \
+  -p 50051:50051 \
+  cosdata/cosdata:latest
+```
+
+The server will be available at `http://localhost:8443`.
+
+### 3. Build from Source (Development)
+
+#### Prerequisites
+
+Before building from source, ensure you have:
+- Git
+- Rust (version 1.81.0 or higher)
+- Cargo (Rust's package manager)
+- C++ compiler (GCC 4.8+ or Clang 3.4+)
+- Python 3.8+ (for running test scripts)
+
+#### Build Steps
+
+```bash
+# Clone the repository
+git clone https://github.com/cosdata/cosdata.git
+cd cosdata
+
+# Build the project
+cargo build --release
+
+# Run Cosdata
+./target/release/cosdata --admin-key your_admin_key
+```
+
+You should see output similar to:
 
 ```
 [2025-02-21T02:30:29Z INFO  cosdata::web_server] starting HTTP server at http://127.0.0.1:8443
