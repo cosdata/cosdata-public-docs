@@ -45,9 +45,19 @@ export default defineConfig({
         {
           label: 'API Reference',
           items: [
-            { label: 'Overview', link: '/api/overview/' },
-            { label: 'Cos Graph Query Language', link: '/api/cosquery/' },
-            { label: 'REST API', link: '/api/documentation/' },
+            { label: 'Overview', link: '/api/rest-api/overview/' },
+            { label: 'Authentication', link: '/api/rest-api/authentication/' },
+            { label: 'Collections', link: '/api/rest-api/collections/' },
+            { label: 'Transactions', link: '/api/rest-api/transactions/' },
+            { label: 'Search', link: '/api/rest-api/search/' },
+            { label: 'Indexes', link: '/api/rest-api/indexes/' },
+            { label: 'Vectors', link: '/api/rest-api/vectors/' },
+            { label: 'Versions', link: '/api/rest-api/versions/' },
+          ],
+        },
+        {
+          label: 'SDK Reference',
+          items: [
             { label: 'Python SDK', link: '/api/python-sdk/' },
             { label: 'Node.js SDK', link: '/api/node-sdk/' },
           ],

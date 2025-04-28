@@ -151,6 +151,13 @@ button:hover, .button:hover {
   border-top: 1px solid rgba(38, 115, 255, 0.1);
 }
 
+/* Add extra horizontal padding to markdown table cells for better readability */
+.sl-markdown-content table th,
+.sl-markdown-content table td {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
 /* Ensure the right sidebar (table of contents) doesn't take too much space */
 .right-sidebar {
   --sl-sidebar-width: 16rem;
