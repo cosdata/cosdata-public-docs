@@ -57,7 +57,9 @@ cd cosdata
 cargo build --release
 
 # Run Cosdata
-./target/release/cosdata --admin-key your_admin_key
+ADMIN_KEY=your-admin-key ./bin/start-cosdata
+
+# This script wraps the Cosdata binary and securely passes the admin key via environment variable.
 ```
 
 You should see output similar to:
@@ -82,20 +84,49 @@ cosdata --admin-key <your-admin-key> --port 8443 --data-dir /path/to/data
 
 ### Configuration File
 
-Create a `config.toml` file:
+> **Note:**
+> If you installed Cosdata from source, a default `config.toml` is already present in the `cosdata` directory. You only need to edit this file to customize your configuration. For Docker or other install methods, you may need to create or mount your own `config.toml` as shown below.
+
+Create or edit a `config.toml` file:
 
 ```toml
-admin_key = "your-admin-key"
+[server]
+host = "127.0.0.1"
 port = 8443
+mode = "http"   # Options: "http" or "https"
+# 443 = official HTTPS for production
+# 8443 = unofficial HTTPS for dev/testing/alternative endpoints
+# 80 is the standard port for HTTP
+# 8080 is the common alternative port for HTTP
+
+admin_key = "your-admin-key"
 data_dir = "/path/to/data"
 log_level = "info"
 ```
 
+> **Port Conventions:**
+> | Port  | Protocol | Typical Use                |
+> |-------|----------|---------------------------|
+> | 80    | HTTP     | Standard HTTP (production)|
+> | 8080  | HTTP     | Alternative HTTP          |
+> | 443   | HTTPS    | Standard HTTPS (production)|
+> | 8443  | HTTPS    | Alternative HTTPS (dev/test)|
+> By default, Cosdata uses port 8443 with HTTP for convenience. For production, it's recommended to use HTTPS on port 443 or HTTP on port 80. You can change the port and mode in your `config.toml` under the `[server]` section.
+
 Then run Cosdata with:
 
 ```bash
-cosdata --config config.toml
+ADMIN_KEY=your-admin-key ./bin/start-cosdata --config config.toml
 ```
+
+> **Recommended:**
+> Use the provided script to start Cosdata, which securely handles your admin key via environment variable:
+>
+> ```bash
+> ADMIN_KEY=your-admin-key ./bin/start-cosdata
+> ```
+>
+> This script ensures your admin key is not exposed on the command line.
 
 ## Quick Start: Testing Your Installation
 
@@ -144,50 +175,55 @@ This script loads sample datasets and performs similarity searches to demonstrat
 Let's create a simple collection and add some vectors using the Python SDK:
 
 ```python
-from cosdata import CosdataClient
+from cosdata import Client
+import numpy as np
 
 # Connect to the Cosdata server
-client = CosdataClient(
-    host="localhost",
-    port=8443,
-    admin_key="your-admin-key"
+client = Client(
+  host="http://127.0.0.1:8443",  # or your server address
+  username="admin",               # your username
+  password="admin",               # your password
+  verify=False                     # set to True if using HTTPS with valid certs
 )
 
 # Create a collection for document embeddings
 collection = client.create_collection(
-    name="documents",
-    description="Collection for document embeddings",
-    dense_vector={
-        "enabled": True,
-        "auto_create_index": True,
-        "dimension": 768
-    }
+  name="documents",
+  dimension=768,  # 768-dimensional vectors
+  description="Collection for document embeddings"
 )
 
-# Add some vectors
-client.insert_vector(
-    collection_name="documents",
-    vector_id="doc1",
-    vector=[0.1, 0.2, 0.3, ...],  # 768-dimensional vector
-    metadata={
-        "title": "Introduction to Vector Databases",
-        "category": "technology"
+# Generate and insert vectors
+def generate_random_vector(id: int, dimension: int) -> dict:
+  values = np.random.uniform(-1, 1, dimension).tolist()
+  return {
+    "id": f"doc_{id}",
+    "dense_values": values,
+    "metadata": {
+      "title": f"Document {id}",
+      "category": "technology"
     }
-)
+  }
+
+vectors = [generate_random_vector(i, 768) for i in range(10)]
+
+# Add vectors using a transaction
+with collection.transaction() as txn:
+  for v in vectors:
+    txn.upsert_vector(v)
 
 # Search for similar vectors
-results = client.search(
-    collection_name="documents",
-    query_vector=[0.1, 0.2, 0.3, ...],
-    limit=5,
-    include_metadata=True
+results = collection.search.dense(
+  query_vector=vectors[0]["dense_values"],
+  top_k=5,
+  return_raw_text=True
 )
 
 # Print results
-for result in results:
-    print(f"Document: {result['id']}")
-    print(f"Similarity: {result['similarity']}")
-    print(f"Metadata: {result['metadata']}")
+for result in results["results"]:
+  print(f"Vector ID: {result['id']}")
+  print(f"Similarity: {result['similarity']}")
+  print(f"Metadata: {result['metadata']}")
 ```
 
 ## Verifying Your Installation
@@ -200,6 +236,61 @@ curl http://localhost:8443/health
 
 If everything is working, you should receive a `200 OK` response.
 
+
+## Running Cosdata as a Service (systemd)
+
+To run Cosdata in the background and ensure it restarts automatically, you can use a systemd service:
+
+Create a file at `/etc/systemd/system/cosdata.service` with the following content:
+
+```ini
+[Unit]
+Description=Cosdata Server
+After=network.target
+
+[Service]
+ExecStart=/path/to/your/cosdata
+WorkingDirectory=/path/to/your/
+Restart=always
+RestartSec=3
+Environment=RUST_LOG=info
+User=your-username
+Group=your-username
+
+[Install]
+WantedBy=multi-user.target
+```
+
+**Explanation:**
+- `ExecStart`: Full path to your compiled Cosdata server binary.
+- `WorkingDirectory`: Directory where your server binary is (helps if it reads config files relative to cwd).
+- `Restart=always`: Restarts automatically if it crashes.
+- `RestartSec=3`: Wait 3 seconds before restarting.
+- `Environment=RUST_LOG=info`: Optional, enables info-level logging.
+- `User` and `Group`: Runs under your username (never run as root unless necessary).
+
+**Enable and start the service:**
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable cosdata
+sudo systemctl start cosdata
+```
+
+**Check status:**
+
+```bash
+sudo systemctl status cosdata
+```
+
+**View logs:**
+
+```bash
+journalctl -u cosdata -f
+```
+
+*(Add `StandardOutput` and `StandardError` lines to the service file if you want to capture logs to a file instead of using `journalctl`.)* 
+
 ## Next Steps
 
 Now that you have Cosdata up and running, you can:
@@ -210,4 +301,4 @@ Now that you have Cosdata up and running, you can:
 - Try out the [Cos Graph Query Language](/api/cosquery/) for complex queries
 - Use the [Python SDK](/api/python-sdk/) to build applications with Cosdata
 - Contribute to the project on <a href="https://github.com/cosdata/cosdata" target="_blank" rel="noopener noreferrer">GitHub</a>
-- Join our <a href="https://discord.gg/XMdtTBrtKT" target="_blank" rel="noopener noreferrer">Discord community</a> to connect with other Cosdata users 
+- Join our <a href="https://discord.gg/XMdtTBrtKT" target="_blank" rel="noopener noreferrer">Discord community</a> to connect with other Cosdata users
