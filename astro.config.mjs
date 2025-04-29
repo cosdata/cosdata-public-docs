@@ -73,16 +73,8 @@ export default defineConfig({
     }),
   ],
   site: 'https://docs.cosdata.io',
-  // Add output configuration for static site generation
   output: 'static',
-  // Add build configuration
   build: {
-    // Enable static file serving
-    static: true,
-  },
-  // Add server configuration
-  server: {
-    // Enable static file serving
-    static: true,
-  },
+    format: 'directory'
+  }
 }); 

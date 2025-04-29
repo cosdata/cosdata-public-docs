@@ -1,0 +1,22 @@
+---
+import { getCollection } from 'astro:content';
+
+// Explicitly mark this as a static route
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const docs = await getCollection('docs');
+  return docs.map(doc => {
+    // Convert the slug array to a string path
+    const slugPath = doc.slug.split('/').join('/');
+    return {
+      params: { slug: slugPath },
+      props: { doc }
+    };
+  });
+}
+
+const { doc } = Astro.props;
+---
+
+<pre>{doc.body}</pre> 
