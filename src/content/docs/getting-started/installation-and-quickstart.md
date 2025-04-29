@@ -79,7 +79,7 @@ You should see output similar to:
 
 ## Configuration Options
 
-Cosdata is configured using a `config.toml` file, which is included by default in your installation. **We recommend not editing this file unless you are an expert or have a specific need.** Most users will not need to change any settings.
+Cosdata is configured using a `config.toml` file, which is included by default in your installation. **We recommend not editing this file unless you are an expert or have a specific need.** Most users will not need to change any settings. The only common exception is configuring SSL certificates for HTTPS - this is covered in the [HTTPS Configuration](#https-configuration-tls) section below.
 
 Below is a reference of the available configuration options, as defined in `config.toml`:
 
@@ -198,20 +198,22 @@ In your `config.toml`, update the `[server]` section:
   ```
 
 #### d. Restart Cosdata
-If running directly:
+Restart Cosdata using the same method you used for installation:
 
-  ```bash
-  ./target/release/cosdata --admin-key YOUR_ADMIN_KEY
-  ```
-If using Docker, mount your cert directory:
+**For Quick Install (Linux):**
+```bash
+start-cosdata
+```
 
-  ```bash
-  docker run -it --rm \
-    -v "/etc/ssl/certs:/etc/ssl/certs:ro" \
-    -v "/etc/ssl/private:/etc/ssl/private:ro" \
-    cosdatateam/cosdata:latest \
-    cosdata --admin-key YOUR_ADMIN_KEY
-  ```
+**For Docker Install:**
+```bash
+docker restart cosdata-server
+```
+
+**For Build from Source:**
+```bash
+cargo run --release -- --admin-key YOUR_ADMIN_KEY
+```
 
 #### 🔎 Verify HTTPS
 Open your browser or run:
@@ -267,6 +269,12 @@ This script loads sample datasets and performs similarity searches to demonstrat
 
 Let's create a simple collection and add some vectors using the Python SDK:
 
+First, install the Cosdata Python client:
+```bash
+pip install cosdata-client
+```
+
+Then, create a new Python script with the following code:
 ```python
 from cosdata import Client
 import numpy as np
