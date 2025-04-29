@@ -57,9 +57,9 @@ cd cosdata
 cargo build --release
 
 # Run Cosdata
-ADMIN_KEY=your-admin-key ./bin/start-cosdata
+start-cosdata
 
-# This script wraps the Cosdata binary and securely passes the admin key via environment variable.
+# The 'start-cosdata' command is installed globally and available in your PATH after installation.
 ```
 
 You should see output similar to:
@@ -103,30 +103,20 @@ admin_key = "your-admin-key"
 data_dir = "/path/to/data"
 log_level = "info"
 ```
-
-> **Port Conventions:**
-> | Port  | Protocol | Typical Use                |
-> |-------|----------|---------------------------|
-> | 80    | HTTP     | Standard HTTP (production)|
-> | 8080  | HTTP     | Alternative HTTP          |
-> | 443   | HTTPS    | Standard HTTPS (production)|
-> | 8443  | HTTPS    | Alternative HTTPS (dev/test)|
-> By default, Cosdata uses port 8443 with HTTP for convenience. For production, it's recommended to use HTTPS on port 443 or HTTP on port 80. You can change the port and mode in your `config.toml` under the `[server]` section.
-
 Then run Cosdata with:
 
 ```bash
-ADMIN_KEY=your-admin-key ./bin/start-cosdata --config config.toml
+start-cosdata --config config.toml
 ```
 
 > **Recommended:**
-> Use the provided script to start Cosdata, which securely handles your admin key via environment variable:
+> Use the provided script to start Cosdata:
 >
-> ```bash
-> ADMIN_KEY=your-admin-key ./bin/start-cosdata
-> ```
+>   ```bash
+>   start-cosdata
+>   ```
 >
-> This script ensures your admin key is not exposed on the command line.
+> The 'start-cosdata' command is available globally in your PATH after installation and securely handles your admin key.
 
 ## Quick Start: Testing Your Installation
 
