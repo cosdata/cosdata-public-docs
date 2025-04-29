@@ -1,0 +1,35 @@
+# Cosdata Documentation
+
+## Getting Started
+- [Introduction](https://docs.cosdata.io/getting-started/introduction.md)
+- [Installation & Quick Start](https://docs.cosdata.io/getting-started/installation-and-quickstart.md)
+
+## API Reference
+- [Overview](https://docs.cosdata.io/api/rest-api/overview.md)
+- [Authentication](https://docs.cosdata.io/api/rest-api/authentication.md)
+- [Collections](https://docs.cosdata.io/api/rest-api/collections.md)
+- [Transactions](https://docs.cosdata.io/api/rest-api/transactions.md)
+- [Search](https://docs.cosdata.io/api/rest-api/search.md)
+- [Indexes](https://docs.cosdata.io/api/rest-api/indexes.md)
+- [Vectors](https://docs.cosdata.io/api/rest-api/vectors.md)
+- [Versions](https://docs.cosdata.io/api/rest-api/versions.md)
+
+## SDK Reference
+- [Python SDK](https://docs.cosdata.io/api/python-sdk.md)
+- [Node.js SDK](https://docs.cosdata.io/api/node-sdk.md)
+
+## Features
+- [Search Relevance](https://docs.cosdata.io/features/search-relevance.md)
+- [Performance](https://docs.cosdata.io/features/performance.md)
+- [Benchmarks](https://cosdata.io/resources/benchmarks)
+
+## Best Practices
+- [Vector Search Best Practices](https://docs.cosdata.io/features/search-relevance.md)
+- [Performance Optimization](https://docs.cosdata.io/features/performance.md)
+- [Security Guidelines](https://docs.cosdata.io/api/rest-api/authentication.md)
+
+## Resources
+- [API Reference](https://docs.cosdata.io/api/rest-api/overview.md)
+- [SDK Documentation](https://docs.cosdata.io/api/python-sdk.md)
+- [Community](https://discord.gg/XMdtTBrtKT)
+- [GitHub Repository](https://github.com/cosdata/cosdata) 
