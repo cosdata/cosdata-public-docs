@@ -7,15 +7,33 @@ Cosdata is designed from the ground up for exceptional performance, even at scal
 
 ## Benchmark Results
 
-In independent benchmarks conducted using the [Qdrаnt benchmark suite](https://qdrant.tech/benchmarks/), Cosdata outperforms other vector databases:
+### Dense Vector Search
+
+Cosdata sets the standard for dense vector search performance:
 
 | Metric | Value | Comparison |
 |--------|-------|------------|
-| Requests Per Second | 1773 | 43% faster than the next fastest option |
-| Average Recall@5 | 98.08% | With 0.98 precision |
-| Upload + Index Time | 14.98 minutes | For 1M vectors with 1536 dimensions |
+| QPS | 1,758+ | 42% faster than Qdrant, 54% faster than Weaviate, 146% faster than ElasticSearch |
+| Precision | 97% | Consistent across challenging search tasks |
+| Index Creation | Up to 12x faster | vs. ElasticSearch on large datasets |
+| Latency | Lower p50/p95 | Across all tested datasets |
 
-For complete benchmark details, see our [Benchmarks](/features/benchmarks/) page.
+Cosdata delivers industry-leading throughput and accuracy for dense vector workloads.
+
+### Full-Text Search (BM25)
+
+Cosdata's custom BM25 implementation delivers:
+
+| Metric | Value | Comparison |
+|--------|-------|------------|
+| QPS | Up to 151x faster | vs. ElasticSearch (scifact dataset), ~44x average across all datasets |
+| Ranking Quality (NDCG) | Similar | To ElasticSearch |
+| Index Creation | Up to 12x faster | vs. ElasticSearch on large datasets |
+| Latency | Lower p50/p95 | Across all tested datasets |
+
+Cosdata matches or exceeds ElasticSearch in ranking quality while providing dramatically higher throughput and lower latency.
+
+For complete benchmark details, see our [Benchmarks](https://cosdata.io/resources/benchmarks) page (opens in a new tab).
 
 ## Optimization Techniques
 

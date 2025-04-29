@@ -7,7 +7,7 @@ Cosdata provides advanced search relevance capabilities to ensure your users fin
 
 ## Hybrid Search
 
-Enhance search precision with our vector database, leveraging the power of combined sparse and dense vector searches to deliver highly relevant, context-rich results for complex queries.
+Enhance search precision and recall with Cosdata's hybrid search, leveraging the power of combined dense, sparse, and full-text (BM25) searches to deliver highly relevant, context-rich results for complex queries.
 
 ### How It Works
 
@@ -15,15 +15,12 @@ Hybrid search combines multiple search techniques:
 
 1. **Dense Vector Search**: Uses embeddings to capture semantic meaning
 2. **Sparse Vector Search**: Captures keyword importance similar to traditional search
-3. **Combined Scoring**: Intelligently merges results for optimal relevance
-
-## Knowledge Graph Integration
-
-Improve the relevance of your search results by seamlessly combining structured information from knowledge graphs with the nuanced semantics of vector embedding, enabling our vector database to deliver richer and more relevant insights.
+3. **Full-Text Search (BM25)**: Provides fast, scalable keyword and phrase queries with industry-leading performance
+4. **Combined Scoring**: Intelligently merges results for optimal relevance and ranking
 
 ### Benefits
 
 - Enhanced contextual understanding
-- Improved entity recognition
-- More accurate relationship mapping
-- Better handling of ambiguous queries
+- Superior relevance for both semantic and keyword queries
+- Lower latency and higher throughput than traditional search engines
+- Flexible scoring for a wide range of use cases

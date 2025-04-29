@@ -3,7 +3,7 @@ title: Introduction to Cosdata
 description: Learn about Cosdata, the next-gen vector database for advanced search and retrieval augmented generation
 ---
 
-Cosdata is a cutting-edge vector database designed to tackle the complex challenges of modern search and retrieval. By combining semantic search capabilities with knowledge graphs and advanced AI technologies, Cosdata delivers a powerful platform for building intelligent data applications.
+Cosdata is a cutting-edge vector database designed to tackle the complex challenges of modern search and retrieval. By combining dense, sparse, and full-text search capabilities with advanced AI technologies, Cosdata delivers a powerful platform for building intelligent data applications.
 
 > **Open Source**: Cosdata is fully open-source and available on <a href="https://github.com/cosdata/cosdata" target="_blank" rel="noopener noreferrer">GitHub</a>. We welcome contributions and feedback from the community!
 
@@ -24,27 +24,33 @@ Independent benchmarks demonstrate Cosdata's exceptional performance characteris
 
 <div class="performance-highlights">
 
-- **1,773 Queries Per Second**: 43% faster than leading competitors
-- **98.08% Recall@5 Accuracy**: With 0.98 precision
-- **~3,000 QPS on 4-core Systems**: With optimized configurations
+- **Dense Vector Search**: Industry-leading 1,758+ QPS on 1M record datasets with 1536-dimensional vectors
+- **42% faster than Qdrant**, **54% faster than Weaviate**, **146% faster than ElasticSearch**
+- **Consistent 97% precision** across challenging search tasks
+- **Significantly faster indexing** than ElasticSearch while maintaining superior query performance
+
+- **Full-Text Search (BM25)**: Cosdata's custom BM25 implementation achieves up to **151x faster QPS** than ElasticSearch on the scifact dataset, with ~44x average improvement across all datasets
+- **Similar ranking quality (NDCG)** to ElasticSearch while delivering superior performance
+- **Index creation is up to 12x faster** on large datasets
+- **Lower latency at both p50 and p95 percentiles** across all tested datasets
 
 </div>
 
-On standard hardware configurations, Cosdata consistently outperforms other vector databases in throughput while maintaining high search accuracy. Our optimized configurations can achieve nearly 3,000 queries per second on modest 4-core systems.
+On standard hardware configurations, Cosdata consistently outperforms other vector databases in throughput while maintaining high search accuracy. 
 
 For detailed benchmark information, see our [Benchmarks](/features/benchmarks/) page.
 
 ## Core Capabilities
 
-### 1. Intelligent Queries with Hybrid Search
+### 1. Hybrid Search: Dense, Sparse, and Full-Text
 
-Cosdata elevates search precision by leveraging hybrid search techniques that combine:
+Cosdata elevates search precision and recall by combining:
 
 - **Dense Vector Search**: Captures semantic meaning through embeddings
-- **Sparse Vector Search**: Maintains keyword importance similar to traditional search
-- **Knowledge Graph Integration**: Provides deeper context by leveraging structured relationships
+- **Sparse Vector Search**: Maintains keyword importance for traditional and hybrid search
+- **Full-Text Search**: Supports fast, scalable keyword and phrase queries
 
-This hybrid approach delivers more relevant, context-rich results even for complex queries, making Cosdata ideal for powering advanced retrieval augmented generation (RAG) pipelines.
+This hybrid approach delivers more relevant, context-rich results even for complex queries, making Cosdata ideal for powering advanced retrieval augmented generation (RAG) pipelines and enterprise search.
 
 ### 2. Lightning-Fast Performance
 
@@ -66,13 +72,11 @@ Cosdata simplifies deployment and integration with:
 
 ## Key Features
 
-- **Semantic Search**: Leverage embedding-based hybrid search to deliver deep semantic analysis
-- **Structured Knowledge Graphs**: Sophisticated context retrieval through structured knowledge representation
-- **Hybrid Search Capabilities**: Combine explicit relationship queries with vector similarity search
-- **Real-Time Search at Scale**: Execute real-time vector search with unmatched scalability
+- **Hybrid Search**: Combine dense, sparse, and full-text (BM25) search for maximum relevance
+- **Semantic Search**: Leverage embedding-based search to deliver deep semantic analysis
+- **Real-Time Search at Scale**: Execute real-time search with unmatched scalability and throughput
 - **ML Pipeline Integration**: Seamlessly integrate with your existing machine learning workflows
 - **Transactional Guarantees**: ACID-compliant operations for data consistency
-- **Comprehensive Query Language**: Powerful Cos Graph Query Language for complex operations
 
 ## Use Cases
 
@@ -102,7 +106,7 @@ Create intelligent knowledge bases that understand the semantic relationships be
 
 Ready to explore Cosdata? Continue to the [Installation & Quick Start Guide](/getting-started/installation-and-quickstart/) to set up your environment and see Cosdata in action.
 
-For a deeper dive into Cosdata's capabilities, explore our [API documentation](/api/overview/) and learn about the [Cos Graph Query Language](/api/cosquery/).
+For a deeper dive into Cosdata's capabilities, explore our [API documentation](/api/overview/).
 
 ## Community Resources
 

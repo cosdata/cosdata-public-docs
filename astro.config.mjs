@@ -33,15 +33,7 @@ export default defineConfig({
             { label: 'Installation & Quick Start', link: '/getting-started/installation-and-quickstart/' },
           ],
         },
-        {
-          label: 'Features',
-          items: [
-            { label: 'Search Relevance', link: '/features/search-relevance/' },
-            { label: 'Performance', link: '/features/performance/' },
-            { label: 'Benchmarks', link: '/features/benchmarks/' },
-            { label: 'Customization', link: '/features/customization/' },
-          ],
-        },
+        
         {
           label: 'API Reference',
           items: [
@@ -60,6 +52,14 @@ export default defineConfig({
           items: [
             { label: 'Python SDK', link: '/api/python-sdk/' },
             { label: 'Node.js SDK', link: '/api/node-sdk/' },
+          ],
+        },
+        {
+          label: 'Features',
+          items: [
+            { label: 'Search Relevance', link: '/features/search-relevance/' },
+            { label: 'Performance', link: '/features/performance/' },
+            { label: 'Benchmarks', link: 'https://cosdata.io/resources/benchmarks', attrs: { target: '_blank', rel: 'noopener noreferrer' } },
           ],
         },
       ],

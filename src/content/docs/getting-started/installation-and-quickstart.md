@@ -15,6 +15,12 @@ curl -sL https://cosdata.io/install.sh | bash
 
 This script will handle all dependencies and set up Cosdata automatically.
 
+To start Cosdata, simply run:
+```bash
+start-cosdata
+```
+You will be prompted to enter your admin key on first run.
+
 ### 2. Docker Install (Mac & Windows)
 For **Mac & Windows** users, we recommend using our Docker-based installation:
 
@@ -34,6 +40,7 @@ docker run -it \
 ```
 
 The server will be available at `http://localhost:8443`.
+You will be prompted to enter your admin key when the container starts.
 
 ### 3. Build from Source (Development)
 
@@ -57,9 +64,7 @@ cd cosdata
 cargo build --release
 
 # Run Cosdata
-start-cosdata
-
-# The 'start-cosdata' command is installed globally and available in your PATH after installation.
+cargo run --release -- --admin-key your-admin-key
 ```
 
 You should see output similar to:
@@ -74,49 +79,147 @@ You should see output similar to:
 
 ## Configuration Options
 
-Cosdata can be configured using command-line arguments or a configuration file:
+Cosdata is configured using a `config.toml` file, which is included by default in your installation. **We recommend not editing this file unless you are an expert or have a specific need.** Most users will not need to change any settings.
 
-### Command-line Arguments
+Below is a reference of the available configuration options, as defined in `config.toml`:
 
-```bash
-cosdata --admin-key <your-admin-key> --port 8443 --data-dir /path/to/data
-```
+  ```toml
+  upload_threshold = 100
+  upload_process_batch_size = 1000
+  num_regions_to_load_on_restart = 10000
+  inverted_index_data_file_parts = 8
+  sparse_raw_values_reranking_factor = 5
+  rerank_sparse_with_raw_values = false
+  tree_map_serialized_parts = 8
 
-### Configuration File
+  [server]
+  host = "127.0.0.1"
+  port = 8443
+  mode = "http"   # Options: "http" or "https"
 
-> **Note:**
-> If you installed Cosdata from source, a default `config.toml` is already present in the `cosdata` directory. You only need to edit this file to customize your configuration. For Docker or other install methods, you may need to create or mount your own `config.toml` as shown below.
+  [thread_pool]
+  pool_size = 64
 
-Create or edit a `config.toml` file:
+  [hnsw]
+  default_neighbors_count = 32
+  default_level_0_neighbors_count = 64
+  default_ef_construction = 128
+  default_ef_search = 256
+  default_num_layer = 9
+  default_max_cache_size = 1000
 
-```toml
-[server]
-host = "127.0.0.1"
-port = 8443
-mode = "http"   # Options: "http" or "https"
-# 443 = official HTTPS for production
-# 8443 = unofficial HTTPS for dev/testing/alternative endpoints
-# 80 is the standard port for HTTP
-# 8080 is the common alternative port for HTTP
+  [server.ssl]
+  cert_file = "/etc/ssl/certs/cosdata-ssl.crt"
+  key_file = "/etc/ssl/private/cosdata-ssl.key"
 
-admin_key = "your-admin-key"
-data_dir = "/path/to/data"
-log_level = "info"
-```
-Then run Cosdata with:
+  [search]
+  shortlist_size = 64
+  early_terminate_threshold = 0.0
 
-```bash
-start-cosdata --config config.toml
-```
+  [indexing]
+  clamp_margin_percent = 1.0 # 1%
+  mode = "sequential"   # Options: "sequential" or "batch"
+  # batch_size = 32  # only required with "batch" indexing mode
 
-> **Recommended:**
-> Use the provided script to start Cosdata:
->
->   ```bash
->   start-cosdata
->   ```
->
-> The 'start-cosdata' command is available globally in your PATH after installation and securely handles your admin key.
+  [grpc]
+  host = "127.0.0.1" # Optional - if not specified uses default loopback address
+  port = 50051       # Optional - if not specified will use default 50051
+  ```
+
+**Key sections:**
+- `upload_threshold`, `upload_process_batch_size`, etc.: Control upload and indexing performance.
+- `[server]`: Network settings for the main API server.
+- `[thread_pool]`: Controls the thread pool size for parallel operations.
+- `[hnsw]`: Parameters for the HNSW vector index.
+- `[server.ssl]`: SSL certificate paths for HTTPS mode.
+- `[search]`: Search and ranking parameters.
+- `[indexing]`: Indexing mode and margin settings.
+- `[grpc]`: gRPC server settings.
+
+> **Note:** Only advanced users should modify these settings. For most deployments, the defaults are optimal.
+
+## HTTPS Configuration (TLS)
+
+By default, Cosdata runs over HTTP, but we strongly recommend enabling HTTPS in production.
+
+### 1. Development Mode (HTTP)
+If you just want to spin up the server quickly without TLS, edit your `config.toml`:
+
+  ```toml
+  [server]
+  mode = "http"
+  ```
+
+  ⚠️ **Warning:** HTTP mode is not secure—only use this for local development or testing.
+
+### 2. Enabling TLS (HTTPS)
+To run Cosdata over HTTPS, you need:
+- TLS certificates (self‑signed OK for testing)
+- A valid `config.toml` pointing at your certs
+- Proper file permissions
+
+#### a. Generate a Self‑Signed Certificate
+Create a new RSA key and self‑signed cert (valid 1 year):
+
+  ```bash
+  openssl req -newkey rsa:2048 -nodes -keyout private_key.pem -x509 -days 365 -out self_signed_certificate.crt
+  ```
+Convert the private key to PKCS#8 format:
+
+  ```bash
+  openssl pkcs8 -topk8 -inform PEM -outform PEM -in private_key.pem -out private_key_pkcs8.pem -nocrypt
+  ```
+
+#### b. Store & Secure Your Certificates
+Set your cert directory (choose a secure path):
+
+  ```bash
+  export SSL_CERT_DIR="/etc/ssl"
+  sudo mkdir -p $SSL_CERT_DIR/{certs,private}
+  sudo mv self_signed_certificate.crt   $SSL_CERT_DIR/certs/cosdata.crt
+  sudo mv private_key_pkcs8.pem         $SSL_CERT_DIR/private/cosdata.key
+  sudo groupadd ssl-cert            || true
+  sudo chgrp ssl-cert $SSL_CERT_DIR/private/cosdata.key
+  sudo chmod 640  $SSL_CERT_DIR/private/cosdata.key
+  sudo chmod 750  $SSL_CERT_DIR/private
+  sudo usermod -aG ssl-cert $USER   # you may need to log out/in or run `newgrp ssl-cert`
+  ```
+
+#### c. Configure Cosdata to Use TLS
+In your `config.toml`, update the `[server]` section:
+
+  ```toml
+  [server]
+  mode     = "https"
+  
+  [server.ssl]
+  cert_file = "/etc/ssl/certs/cosdata.crt"
+  key_file  = "/etc/ssl/private/cosdata.key"
+  ```
+
+#### d. Restart Cosdata
+If running directly:
+
+  ```bash
+  ./target/release/cosdata --admin-key YOUR_ADMIN_KEY
+  ```
+If using Docker, mount your cert directory:
+
+  ```bash
+  docker run -it --rm \
+    -v "/etc/ssl/certs:/etc/ssl/certs:ro" \
+    -v "/etc/ssl/private:/etc/ssl/private:ro" \
+    cosdatateam/cosdata:latest \
+    cosdata --admin-key YOUR_ADMIN_KEY
+  ```
+
+#### 🔎 Verify HTTPS
+Open your browser or run:
+
+  ```bash
+  curl -kv https://localhost:8443/health
+  ```
+You should see a successful TLS handshake and a healthy status response.
 
 ## Quick Start: Testing Your Installation
 
