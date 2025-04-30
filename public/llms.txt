@@ -1,4 +1,16 @@
-# Cosdata Documentation
+# Cosdata Documentation for LLMs
+
+This file provides instructions for AI tools and agents on how to access our documentation in plain text format.
+
+## Instructions for LLMs
+
+1. All documentation pages are available in plain text markdown format by adding `/md/` to the URL path.
+2. For example, to access the Indexes documentation:
+   - Regular URL: `https://docs.cosdata.io/api/rest-api/indexes`
+   - Markdown URL: `https://docs.cosdata.io/md/api/rest-api/indexes`
+3. The markdown content is served as pre-formatted text, preserving all formatting and structure.
+4. Use the links below to access specific documentation sections.
+5. When making API calls or generating code, reference the specific sections using the markdown headers.
 
 ## Getting Started
 - [Introduction](https://docs.cosdata.io/md/getting-started/introduction)

@@ -20,14 +20,14 @@ npm install cosdata-sdk
 First, import the Cosdata client and establish a connection:
 
 ```typescript
-import { Client } from 'cosdata-sdk';
+import { createClient } from 'cosdata-sdk';
 
-// Initialize the client with your server details
-const client = new Client({
-  host: 'http://localhost:8443',
-  username: 'admin',
-  password: 'admin',
-  verifySSL: false
+// Initialize the client (all parameters are optional)
+const client = createClient({
+  host: 'http://127.0.0.1:8443',  // Default host
+  username: 'admin',              // Default username
+  password: 'test_key',           // Default password
+  verifySSL: false                // SSL verification
 });
 ```
 
@@ -36,11 +36,35 @@ const client = new Client({
 Create a new vector collection:
 
 ```typescript
-// Create a collection for storing 768-dimensional vectors
+// Create a collection for storing vectors
 const collection = await client.createCollection({
-  name: 'my_embeddings',
-  dimension: 768,
-  description: 'Collection for storing document embeddings'
+  name: 'my_collection',
+  dimension: 128,
+  dense_vector: {
+    enabled: true,
+    dimension: 128,
+    auto_create_index: false
+  }
+});
+```
+
+### Creating an Index
+
+Create a search index for your collection:
+
+```typescript
+// Create an index with custom parameters
+const index = await collection.createIndex({
+  name: 'my_collection_dense_index',
+  distance_metric: 'cosine',
+  quantization_type: 'auto',
+  sample_threshold: 100,
+  num_layers: 16,
+  max_cache_size: 1024,
+  ef_construction: 128,
+  ef_search: 64,
+  neighbors_count: 10,
+  level_0_neighbors_count: 20
 });
 ```
 
@@ -49,50 +73,21 @@ const collection = await client.createCollection({
 Add vectors to your collection using transactions:
 
 ```typescript
-// Get the collection and create an index
-const collection = await client.getCollection('my_embeddings');
-const index = await collection.createIndex();
-
-// Using automatic transaction management (recommended)
-await index.transaction(async (txn) => {
-  // Single vector insertion
-  await txn.upsert([{
-    id: 'doc1',
-    values: [0.1, 0.2, 0.3, ...], // 768-dimensional vector
-    title: 'Sample Document',
-    category: 'documentation',
-    tags: ['example', 'getting-started']
-  }]);
-
-  // Batch insertion
-  const vectors = [
-    {
-      id: 'doc2',
-      values: [0.2, 0.3, 0.4, ...],
-      title: 'Another Document'
-    },
-    {
-      id: 'doc3',
-      values: [0.3, 0.4, 0.5, ...],
-      title: 'Third Document'
-    }
-  ];
-  await txn.upsert(vectors);
-});
-
-// Using manual transaction management
-const txn = index.createTransaction();
-try {
-  await txn.upsert([{
-    id: 'doc4',
-    values: [0.4, 0.5, 0.6, ...],
-    title: 'Fourth Document'
-  }]);
-  await txn.commit();
-} catch (error) {
-  await txn.abort();
-  throw error;
+// Generate some vectors
+function generateRandomVector(dimension: number): number[] {
+  return Array.from({ length: dimension }, () => Math.random());
 }
+
+const vectors = Array.from({ length: 100 }, (_, i) => ({
+  id: `vec_${i}`,
+  dense_values: generateRandomVector(128),
+  document_id: `doc_${i}`
+}));
+
+// Add vectors using a transaction
+const txn = collection.transaction();
+await txn.batch_upsert_vectors(vectors);
+await txn.commit();
 ```
 
 ### Searching Vectors
@@ -100,14 +95,11 @@ try {
 Perform similarity search:
 
 ```typescript
-// Get the collection and create an index
-const collection = await client.getCollection('my_embeddings');
-const index = await collection.createIndex();
-
 // Search for similar vectors
-const results = await index.query({
-  vector: [0.1, 0.2, 0.3, ...],
-  nnCount: 5
+const results = await collection.getSearch().dense({
+  query_vector: generateRandomVector(128),
+  top_k: 5,
+  return_raw_text: true
 });
 
 // Process search results
@@ -116,34 +108,6 @@ for (const result of results) {
   console.log(`Similarity: ${result.similarity}`);
   console.log(`Metadata: ${JSON.stringify(result.metadata)}`);
 }
-
-// Fetch a specific vector
-const vector = await index.fetchVector('doc1');
-console.log('Fetched vector:', vector);
-```
-
-### Creating and Managing Indexes
-
-Create and manage search indexes:
-
-```typescript
-// Get the collection
-const collection = await client.getCollection('my_embeddings');
-
-// Create an HNSW index with custom parameters
-const index = await collection.createIndex({
-  distanceMetric: 'cosine',
-  numLayers: 7,
-  maxCacheSize: 1000,
-  efConstruction: 512,
-  efSearch: 256,
-  neighborsCount: 32,
-  level0NeighborsCount: 64
-});
-
-// Get collection information including indexes
-const collectionInfo = await collection.getInfo();
-console.log('Collection info:', collectionInfo);
 ```
 
 ## Advanced Usage
@@ -153,35 +117,27 @@ console.log('Collection info:', collectionInfo);
 Perform batch operations for better performance:
 
 ```typescript
-// Get the collection and create an index
-const collection = await client.getCollection('my_embeddings');
-const index = await collection.createIndex();
-
 // Generate example vectors
-const vectors = [];
-for (let i = 0; i < 1000; i++) {
-  // Create a random 768-dimensional vector
-  const values = Array.from({ length: 768 }, () => Math.random());
-  
-  vectors.push({
-    id: `batch_doc_${i}`,
-    values,
-    metadata: {
-      batch_id: Math.floor(i / 100),
-      timestamp: new Date().toISOString()
-    }
-  });
-}
+const vectors = Array.from({ length: 1000 }, (_, i) => ({
+  id: `vec_${i}`,
+  dense_values: generateRandomVector(128),
+  document_id: `doc_${i}`,
+  metadata: {
+    batch_id: Math.floor(i / 100),
+    timestamp: new Date().toISOString()
+  }
+}));
 
 // Insert vectors in batches using transactions
 const batchSize = 200; // Maximum batch size
 for (let i = 0; i < vectors.length; i += batchSize) {
   const batch = vectors.slice(i, i + batchSize);
   
-  await index.transaction(async (txn) => {
-    await txn.upsert(batch);
-    console.log(`Inserted batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(vectors.length/batchSize)}`);
-  });
+  const txn = collection.transaction();
+  await txn.batch_upsert_vectors(batch);
+  await txn.commit();
+  
+  console.log(`Inserted batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(vectors.length/batchSize)}`);
 }
 ```
 
@@ -192,10 +148,18 @@ Implement proper error handling in your applications:
 ```typescript
 try {
   // Perform Cosdata operations
-  const collection = await client.getCollection('non_existent_collection');
+  const collection = await client.createCollection({
+    name: 'my_collection',
+    dimension: 128,
+    dense_vector: {
+      enabled: true,
+      dimension: 128,
+      auto_create_index: false
+    }
+  });
 } catch (error) {
-  if (error.message.includes('Failed to get collection')) {
-    console.error('Collection not found:', error);
+  if (error.message.includes('Collection already exists')) {
+    console.error('Collection already exists:', error);
   } else if (error.message.includes('Authentication failed')) {
     console.error('Authentication error:', error);
   } else if (error.message.includes('Connection error')) {
@@ -224,9 +188,10 @@ try {
 
 ### Transaction Management
 
-- Use the `index.transaction()` method for automatic commit/abort handling
-- Keep transactions short-lived
-- Implement proper error handling and retry logic
+- Use transactions for batch operations
+- Always call `commit()` after successful operations
+- Use `abort()` in case of errors
+- Maximum batch size is 200 vectors per transaction
 
 ### Performance Optimization
 
@@ -238,47 +203,53 @@ try {
 
 ### Client
 
-- `new Client(options)`: Create a new client instance
+- `createClient(options)`: Create a new client instance
   - `options.host`: Server host URL (default: 'http://127.0.0.1:8443')
   - `options.username`: Username for authentication (default: 'admin')
-  - `options.password`: Password for authentication (default: 'admin')
+  - `options.password`: Password for authentication (default: 'test_key')
   - `options.verifySSL`: Whether to verify SSL certificates (default: false)
 - `client.createCollection(options)`: Create a new collection
   - `options.name`: Name of the collection
-  - `options.dimension`: Vector dimension (default: 1024)
-  - `options.description`: Optional collection description
+  - `options.dimension`: Vector dimension
+  - `options.dense_vector`: Dense vector configuration
+    - `enabled`: Whether dense vectors are enabled
+    - `dimension`: Dense vector dimension
+    - `auto_create_index`: Whether to auto-create index
 - `client.getCollection(name)`: Get an existing collection
-- `client.collection(name)`: Alias for getCollection
 - `client.listCollections()`: List all collections
-- `client.collections()`: Get all collections as Collection objects
 
 ### Collection
 
 - `collection.createIndex(options)`: Create a new index
-  - `options.distanceMetric`: Type of distance metric (default: 'cosine')
-  - `options.numLayers`: Number of layers in HNSW graph (default: 7)
-  - `options.maxCacheSize`: Maximum cache size (default: 1000)
-  - `options.efConstruction`: ef parameter for construction (default: 512)
-  - `options.efSearch`: ef parameter for search (default: 256)
-  - `options.neighborsCount`: Number of neighbors (default: 32)
-  - `options.level0NeighborsCount`: Level 0 neighbors count (default: 64)
-- `collection.index(distanceMetric)`: Get or create an index
+  - `options.name`: Name of the index
+  - `options.distance_metric`: Type of distance metric
+  - `options.quantization_type`: Type of quantization
+  - `options.sample_threshold`: Sample threshold
+  - `options.num_layers`: Number of layers
+  - `options.max_cache_size`: Maximum cache size
+  - `options.ef_construction`: ef parameter for construction
+  - `options.ef_search`: ef parameter for search
+  - `options.neighbors_count`: Number of neighbors
+  - `options.level_0_neighbors_count`: Level 0 neighbors count
 - `collection.getInfo()`: Get collection information
-
-### Index
-
-- `index.createTransaction()`: Create a new transaction
-- `index.transaction(callback)`: Execute operations in a transaction
-- `index.query(options)`: Search for similar vectors
-  - `options.vector`: Query vector
-  - `options.nnCount`: Number of nearest neighbors (default: 5)
-- `index.fetchVector(id)`: Fetch a specific vector by ID
+- `collection.transaction()`: Create a new transaction
+- `collection.getSearch()`: Get search interface
+- `collection.getVectors()`: Get vectors interface
+- `collection.getVersions()`: Get versions interface
 
 ### Transaction
 
-- `transaction.upsert(vectors)`: Insert or update vectors
+- `transaction.upsert_vector(vector)`: Insert or update a single vector
+- `transaction.batch_upsert_vectors(vectors)`: Insert or update multiple vectors
 - `transaction.commit()`: Commit the transaction
 - `transaction.abort()`: Abort the transaction
+
+### Search
+
+- `search.dense(options)`: Perform dense vector search
+  - `options.query_vector`: Query vector
+  - `options.top_k`: Number of nearest neighbors
+  - `options.return_raw_text`: Whether to return raw text
 
 ## Reference
 
