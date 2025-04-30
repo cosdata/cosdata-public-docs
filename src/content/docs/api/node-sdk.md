@@ -250,11 +250,35 @@ try {
   - `options.query_vector`: Query vector
   - `options.top_k`: Number of nearest neighbors
   - `options.return_raw_text`: Whether to return raw text
+  - Returns: `Promise<SearchResponse>`
+    ```typescript
+    interface SearchResponse {
+      results: SearchResult[];
+    }
+
+    interface SearchResult {
+      id: string;
+      document_id?: string;
+      score: number;
+      text?: string | null;
+    }
+    ```
+- `search.sparse(options)`: Perform sparse vector search
+  - `options.query_terms`: Array of sparse vector entries
+  - `options.top_k`: Number of nearest neighbors
+  - `options.early_terminate_threshold`: Threshold for early termination
+  - `options.return_raw_text`: Whether to return raw text
+  - Returns: `Promise<SearchResponse>` with same interface as dense search
+- `search.text(options)`: Perform text search using TF-IDF
+  - `options.query_text`: Text to search for
+  - `options.top_k`: Number of nearest neighbors
+  - `options.return_raw_text`: Whether to return raw text
+  - Returns: `Promise<SearchResponse>` with same interface as dense search
 
 ### Vectors
 
-- `vectors.get(vector_id: string): Promise<VectorObject>`
-  - Returns a plain object matching the vector schema:
+- `vectors.get(vector_id: string): Promise<any>`
+  - Returns a plain object matching the vector schema or null if not found:
     ```typescript
     interface VectorObject {
       id: string;
@@ -266,22 +290,30 @@ try {
     }
     ```
 - `vectors.exists(vector_id: string): Promise<boolean>`
+- `vectors.delete(vector_id: string): Promise<void>`
 
 ### Versions
 
 - `versions.getCurrent(): Promise<Version>`
-- `versions.list(): Promise<Version[]>`
-- `versions.get(version_hash: string): Promise<Version>`
-
-Where `Version` is:
-```typescript
-interface Version {
-  hash: string;
-  version_number: number;
-  timestamp: number;
-  vector_count: number;
-}
-```
+  - Returns the current version information:
+    ```typescript
+    interface Version {
+      hash: string;
+      version_number: number;
+      timestamp: number;
+      vector_count: number;
+    }
+    ```
+- `versions.list(): Promise<ListVersionsResponse>`
+  - Returns all versions and the current hash:
+    ```typescript
+    interface ListVersionsResponse {
+      versions: Version[];
+      current_hash: string;
+    }
+    ```
+- `versions.getByHash(versionHash: string): Promise<Version>`
+  - Returns version information for a specific hash
 
 ## Reference
 
