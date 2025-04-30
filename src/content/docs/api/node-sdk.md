@@ -232,7 +232,7 @@ try {
   - `options.neighbors_count`: Number of neighbors
   - `options.level_0_neighbors_count`: Level 0 neighbors count
 - `collection.getInfo()`: Get collection information
-- `collection.transaction()`: Create a new transaction
+- `collection.transaction()`: Create a new transaction (synchronous, returns a Transaction instance)
 - `collection.getSearch()`: Get search interface
 - `collection.getVectors()`: Get vectors interface
 - `collection.getVersions()`: Get versions interface
@@ -250,6 +250,38 @@ try {
   - `options.query_vector`: Query vector
   - `options.top_k`: Number of nearest neighbors
   - `options.return_raw_text`: Whether to return raw text
+
+### Vectors
+
+- `vectors.get(vector_id: string): Promise<VectorObject>`
+  - Returns a plain object matching the vector schema:
+    ```typescript
+    interface VectorObject {
+      id: string;
+      document_id?: string;
+      dense_values?: number[];
+      sparse_indices?: number[];
+      sparse_values?: number[];
+      text?: string;
+    }
+    ```
+- `vectors.exists(vector_id: string): Promise<boolean>`
+
+### Versions
+
+- `versions.getCurrent(): Promise<Version>`
+- `versions.list(): Promise<Version[]>`
+- `versions.get(version_hash: string): Promise<Version>`
+
+Where `Version` is:
+```typescript
+interface Version {
+  hash: string;
+  version_number: number;
+  timestamp: number;
+  vector_count: number;
+}
+```
 
 ## Reference
 
