@@ -1,0 +1,17 @@
+<select id="theme-select" aria-label="Theme select" style="margin-left: 1rem;">
+  <option value="auto">Auto</option>
+  <option value="light">Light</option>
+  <option value="dark">Dark</option>
+</select>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const select = document.getElementById('theme-select');
+    if (!select) return;
+    select.value = localStorage.getItem('theme') || 'auto';
+    select.addEventListener('change', (e) => {
+      const theme = e.target.value;
+      localStorage.setItem('theme', theme);
+      document.documentElement.dataset.theme = theme === 'auto' ? '' : theme;
+    });
+  });
+</script> 

@@ -25,12 +25,16 @@ export default defineConfig({
           }
         }
       ],
+      // components: {
+      //   Header: './src/components/CustomHeader.astro',
+      // },
       sidebar: [
         {
           label: 'Getting Started',
           items: [
             { label: 'Introduction', link: '/getting-started/introduction/' },
             { label: 'Installation & Quick Start', link: '/getting-started/installation-and-quickstart/' },
+            { label: 'Building with AI?', link: '/getting-started/building-with-ai/' },
           ],
         },
         
