@@ -240,7 +240,7 @@ try {
 ### Transaction
 
 - `transaction.upsert_vector(vector)`: Insert or update a single vector
-- `transaction.batch_upsert_vectors(vectors)`: Insert or update multiple vectors
+- `transaction.batch_upsert_vectors(vectors, maxWorkers?, maxRetries?)`: Insert or update multiple vectors (with optional concurrency and retry)
 - `transaction.commit()`: Commit the transaction
 - `transaction.abort()`: Abort the transaction
 
