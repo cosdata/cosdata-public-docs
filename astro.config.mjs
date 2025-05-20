@@ -29,7 +29,7 @@ export default defineConfig({
           tag: 'meta',
           attrs: {
             property: 'og:image',
-            content: '/cosdata-og.jpg'
+            content: '/cosdata-og.png'
           }
         }
       ],
