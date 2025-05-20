@@ -42,6 +42,17 @@ docker run -it \
 The server will be available at `http://localhost:8443`.
 You will be prompted to enter your admin key when the container starts.
 
+> **Troubleshooting Docker Pull Issues:**
+> 
+> If you encounter errors pulling the Cosdata Docker image (especially on Mac), it may be due to an incorrect or expired Docker login session. Even though the image is public, being logged in incorrectly can cause issues. Try running:
+> 
+> ```bash
+> docker logout
+> docker login -u <your-docker-username>
+> ```
+> 
+> Logging out and then logging in again via the command line often resolves these problems.
+
 ### 3. Build from Source (Development)
 
 #### Prerequisites
