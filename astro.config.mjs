@@ -23,6 +23,14 @@ export default defineConfig({
             href: '/favicon/favicon.ico',
             type: 'image/x-icon'
           }
+        },
+        // Global default og:image for link previews
+        {
+          tag: 'meta',
+          attrs: {
+            property: 'og:image',
+            content: '/cosdata-og.jpg'
+          }
         }
       ],
       // components: {
