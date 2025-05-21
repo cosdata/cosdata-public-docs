@@ -74,6 +74,13 @@ export default defineConfig({
             { label: 'Benchmarks', link: 'https://cosdata.io/resources/benchmarks', attrs: { target: '_blank', rel: 'noopener noreferrer' } },
           ],
         },
+        {
+          label: 'Guides',
+          items: [
+            { label: 'Vector Databases 101', link: '/guides/vector-databases-101/' },
+            { label: 'Generating Embeddings', link: '/guides/generating-embeddings/' },
+          ],
+        },
       ],
       defaultLocale: 'root',
       locales: {

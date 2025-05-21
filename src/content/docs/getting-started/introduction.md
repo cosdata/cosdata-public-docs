@@ -7,6 +7,8 @@ Cosdata is a cutting-edge vector database designed to tackle the complex challen
 
 > **Open Source**: Cosdata is fully open-source and available on <a href="https://github.com/cosdata/cosdata" target="_blank" rel="noopener noreferrer">GitHub</a>. We welcome contributions and feedback from the community!
 
+> **New to vector databases?** Read our [Vector Databases 101 guide](/guides/vector-databases-101/) for a foundational overview and links to our educational blog series.
+
 ## Tackling Modern Search Challenges
 
 In today's data-rich environment, traditional keyword-based search methods are no longer sufficient. Organizations face several key challenges:
