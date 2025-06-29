@@ -1,14 +1,19 @@
-<select id="language-select" aria-label="Language select" style="margin-left: 1rem;">
+<select
+  id="language-select"
+  aria-label="Language select"
+  style="margin-left: 1rem;"
+>
   <option value="en">English</option>
   <!-- Add more languages as needed -->
 </select>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const select = document.getElementById('language-select');
+  document.addEventListener("DOMContentLoaded", () => {
+    const select = document.getElementById("language-select");
     if (!select) return;
-    select.addEventListener('change', (e) => {
+    select.addEventListener("change", (e) => {
       // For now, just reload the page. Implement actual language switching as needed.
       window.location.reload();
     });
   });
-</script> 
+</script>
+

@@ -98,7 +98,8 @@
 }
 
 /* Style buttons to match Cosdata branding */
-button, .button {
+button,
+.button {
   background-color: var(--cosdata-blue);
   color: white;
   border-radius: 8px;
@@ -106,7 +107,8 @@ button, .button {
   transition: background-color 0.2s ease;
 }
 
-button:hover, .button:hover {
+button:hover,
+.button:hover {
   background-color: var(--cosdata-pink);
 }
 
@@ -171,15 +173,131 @@ button:hover, .button:hover {
   margin: 0 auto;
 }
 
-
 /* Media query for larger screens to optimize layout */
 @media (min-width: 1200px) {
   .sl-container {
     --sl-content-width: 100%;
   }
-  
+
   /* Reduce right sidebar padding to use more space */
   .right-sidebar-container {
     padding-left: 1rem;
   }
-} 
+}
+
+:root[data-theme="dark"] {
+  --cosdata-dark-bg: #1a1a2e;
+  --cosdata-darker-bg: #16213e;
+  --cosdata-dark-border: rgba(255, 255, 255, 0.1);
+  --cosdata-dark-text: #e2e8f0;
+  --cosdata-dark-text-muted: #94a3b8;
+}
+
+:root[data-theme="dark"] .sl-markdown-content blockquote {
+  background-color: var(--cosdata-darker-bg);
+  border-left-color: var(--cosdata-blue);
+  color: var(--cosdata-dark-text);
+}
+
+:root[data-theme="dark"] .sl-markdown-content .starlight-aside {
+  background-color: var(--cosdata-darker-bg);
+  border-color: var(--cosdata-dark-border);
+  color: var(--cosdata-dark-text);
+}
+
+:root[data-theme="dark"] .sl-markdown-content .starlight-aside--note {
+  background-color: rgba(38, 115, 255, 0.1);
+  border-left-color: var(--cosdata-blue);
+}
+
+:root[data-theme="dark"] .sl-markdown-content .starlight-aside--tip {
+  background-color: rgba(34, 197, 94, 0.1);
+  border-left-color: #22c55e;
+}
+
+:root[data-theme="dark"] .sl-markdown-content .starlight-aside--caution {
+  background-color: rgba(251, 146, 60, 0.1);
+  border-left-color: #fb923c;
+}
+
+:root[data-theme="dark"] .sl-markdown-content .starlight-aside--danger {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-left-color: #ef4444;
+}
+
+:root[data-theme="dark"] .right-sidebar {
+  background-color: var(--cosdata-dark-bg);
+  border-left-color: var(--cosdata-dark-border);
+}
+
+:root[data-theme="dark"] .sl-table-of-contents {
+  background-color: var(--cosdata-dark-bg);
+}
+
+:root[data-theme="dark"] .sl-table-of-contents a {
+  color: var(--cosdata-dark-text-muted);
+}
+
+:root[data-theme="dark"] .sl-table-of-contents a:hover,
+:root[data-theme="dark"] .sl-table-of-contents a[aria-current="true"] {
+  color: var(--cosdata-blue);
+}
+
+:root[data-theme="dark"] .sl-sidebar {
+  background-color: var(--cosdata-dark-bg);
+  border-right-color: var(--cosdata-dark-border);
+}
+
+:root[data-theme="dark"] .sl-sidebar a {
+  color: var(--cosdata-dark-text-muted);
+}
+
+:root[data-theme="dark"] .sl-sidebar a:hover,
+:root[data-theme="dark"] .sl-sidebar a[aria-current="page"] {
+  color: var(--cosdata-blue);
+}
+
+:root[data-theme="dark"] .sl-header {
+  background: var(--cosdata-dark-bg);
+  border-bottom-color: var(--cosdata-dark-border);
+}
+
+:root[data-theme="dark"] .sl-markdown-content table {
+  background-color: var(--cosdata-dark-bg);
+  border-color: var(--cosdata-dark-border);
+}
+
+:root[data-theme="dark"] .sl-markdown-content table th {
+  background-color: var(--cosdata-darker-bg);
+  color: var(--cosdata-dark-text);
+  border-bottom-color: var(--cosdata-dark-border);
+}
+
+:root[data-theme="dark"] .sl-markdown-content table td {
+  color: var(--cosdata-dark-text);
+  border-top-color: var(--cosdata-dark-border);
+}
+
+:root[data-theme="dark"] .sl-markdown-content code:not(pre code) {
+  background-color: rgba(255, 51, 102, 0.2);
+  color: var(--cosdata-pink);
+}
+
+:root[data-theme="dark"] .sl-markdown-content {
+  color: var(--cosdata-dark-text);
+}
+
+:root[data-theme="dark"] .sl-markdown-content h1 {
+  color: var(--cosdata-pink);
+}
+
+:root[data-theme="dark"] .sl-markdown-content h2 {
+  color: var(--cosdata-blue);
+}
+
+:root[data-theme="dark"] .sl-markdown-content h3,
+:root[data-theme="dark"] .sl-markdown-content h4,
+:root[data-theme="dark"] .sl-markdown-content h5,
+:root[data-theme="dark"] .sl-markdown-content h6 {
+  color: var(--cosdata-dark-text);
+}
