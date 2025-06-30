@@ -5,11 +5,11 @@ description: Real-time data ingestion endpoints for the Cosdata vector database
 
 Cosdata's streaming data ingestion is designed for scenarios where individual records must become immediately searchable upon insertion. This is ideal for real-time monitoring systems, live content feeds, and streaming analytics.
 
-Unlike explicit transactions, streaming ingestion uses a simplified "fire-and-forget" API that abstracts away transactional complexity. Each operation is atomic at the record level and immediately available for querying.
+Streaming ingestion uses a simplified fire-and-forget API that abstracts away transactional complexity. Each operation is atomic at the record level and immediately available for querying.
 
-## Upsert vectors with a synchronous transaction
+## Streaming Data: Upsert Vectors
 
-This API provides a simplified way to upsert vectors without managing transaction lifecycle. A transaction is created, vectors are upserted, and the transaction is committed in a single atomic request.
+This API provides a simplified fire-and-forget way to upsert vectors, abstracting away the complexity of atomic operations. The entire workflow is handled in a single request.
 
 **Endpoint:** `POST /vectordb/collections/{collection_id}/streaming/upsert`
 
@@ -46,9 +46,9 @@ This API provides a simplified way to upsert vectors without managing transactio
 
 ---
 
-## Delete a vector with a synchronous transaction
+## Streaming Data: Delete a Vector
 
-This API provides a simplified way to delete a vector without managing transaction lifecycle. A transaction is created, the vector is deleted, and the transaction is committed in a single atomic request.
+This API provides a simplified fire-and-forget way to delete a vector, abstracting away the complexity of atomic operations. The entire workflow is handled in a single request.
 
 **Endpoint:** `DELETE /vectordb/collections/{collection_id}/streaming/delete/{vector_id}`
 

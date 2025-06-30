@@ -3,11 +3,15 @@ title: Transactions API
 description: Transaction management endpoints for the Cosdata vector database
 ---
 
-Cosdata uses explicit transactions for atomic batch operations. This is ideal for importing large, logically cohesive datasets where partial imports would compromise data integrity.
+Cosdata uses transactions (atomic operations) for batch operations. This is ideal for importing large, logically cohesive datasets where partial imports would compromise data integrity.
 
 Transactions are managed resources with a defined lifecycle: open → operate → commit/abort. They provide all-or-nothing semantics with rollback capability. All data modifications within a transaction are buffered and applied in a single atomic operation upon commit.
 
-The commit process is asynchronous. Once a transaction is committed, the system begins indexing the data in the background. You can monitor the progress of a transaction using the status endpoint.
+**Commit = atomic**
+
+**Indexing = background process**
+
+Once a transaction is committed, the system begins indexing the data in the background. You can monitor the progress of a transaction using the status endpoint.
 
 ## Create Transaction
 
@@ -50,7 +54,7 @@ Creates a new transaction for batch operations on a collection.
 
 ## Get Transaction Status
 
-Gets the current status of a transaction, which is useful for monitoring the progress of an asynchronous commit.
+Gets the current status of a transaction, which is useful for monitoring the progress of background indexing after commit.
 
 **Endpoint:** `GET /vectordb/collections/{collection_id}/transactions/{transaction_id}/status`
 
@@ -70,8 +74,9 @@ Gets the current status of a transaction, which is useful for monitoring the pro
       "started_at": "2023-01-01T12:00:00Z",
       "completed_at": "2023-01-01T12:00:00Z",
       "stats": {
-        "records_processed": 1000,
-        "total_records": 1000,
+        "records_upserted": 1000,
+        "records_deleted": 0,
+        "total_operations": 5,
         "percentage_complete": 100.0,
         "processing_time_seconds": 120,
         "average_throughput": 8.33,
@@ -95,7 +100,7 @@ Gets the current status of a transaction, which is useful for monitoring the pro
 
 ## Commit Transaction
 
-Commits a transaction, making all changes permanent. The commit is processed asynchronously. Use the `Get Transaction Status` endpoint to monitor its progress.
+Commits a transaction, making all changes permanent. The commit is atomic. Use the `Get Transaction Status` endpoint to monitor background indexing progress.
 
 **Endpoint:** `POST /vectordb/collections/{collection_id}/transactions/{transaction_id}/commit`
 
