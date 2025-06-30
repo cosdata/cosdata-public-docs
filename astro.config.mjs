@@ -56,6 +56,7 @@ export default defineConfig({
         {
           label: "API Reference",
           items: [
+            { label: "Interactive", link: "/api/rest-api/interactive/", badge: "New" },
             { label: "Overview", link: "/api/rest-api/overview/" },
             { label: "Authentication", link: "/api/rest-api/authentication/" },
             { label: "Collections", link: "/api/rest-api/collections/" },

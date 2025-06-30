@@ -1,0 +1,3509 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Cosdata API",
+        "description": "Cosdata Vector Database API\n\nAPI description for Cosdata vector search engine.\n\nThis document describes CRUD and search operations on collections of points (vectors with payload).",
+        "contact": {
+            "url": "https://cosdata.io",
+            "email": "info@cosdata.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "https://www.apache.org/licenses/LICENSE-2.0"
+        },
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/auth/create-session": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Create a new user session (login)",
+                "operationId": "create_session",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateSessionDTO"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Session created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Session"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong credentials"
+                    },
+                    "401": {
+                        "description": "Invalid authentication token"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/collections/{collection_id}/vectors": {
+            "get": {
+                "tags": [
+                    "vectors"
+                ],
+                "summary": "Get vectors for a document",
+                "description": "Returns all vectors associated with a specific document ID within a collection.",
+                "operationId": "query_vectors",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of vectors",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CreateVectorDto"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Collection not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections": {
+            "get": {
+                "tags": [
+                    "collections"
+                ],
+                "summary": "Get all collections",
+                "description": "Returns a list of all collections.",
+                "operationId": "get_collections",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "List of collections",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/GetCollectionsResponseDto"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "collections"
+                ],
+                "summary": "Create a new collection",
+                "description": "Creates a new vector collection with the specified configuration.",
+                "operationId": "create_collection",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateCollectionDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Collection created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateCollectionDtoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request"
+                    },
+                    "409": {
+                        "description": "Collection already exists"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/loaded": {
+            "get": {
+                "tags": [
+                    "collections"
+                ],
+                "summary": "Get loaded collections",
+                "description": "Returns a list of all collections currently loaded in memory.",
+                "operationId": "get_loaded_collections",
+                "responses": {
+                    "200": {
+                        "description": "List of loaded collections",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}": {
+            "get": {
+                "tags": [
+                    "collections"
+                ],
+                "summary": "Get collection by ID",
+                "description": "Returns a specific collection by its ID.",
+                "operationId": "get_collection_by_id",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Collection information with vector counts",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CollectionWithVectorCountsDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Collection not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "collections"
+                ],
+                "summary": "Delete collection by ID",
+                "description": "Deletes a collection by its ID.",
+                "operationId": "delete_collection_by_id",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Collection deleted successfully"
+                    },
+                    "400": {
+                        "description": "Collection not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/indexes": {
+            "get": {
+                "tags": [
+                    "indexes"
+                ],
+                "summary": "Get indexes for a collection",
+                "description": "Retrieves all indexes associated with the specified collection",
+                "operationId": "get_index",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Indexes retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IndexDetailsDto"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Collection not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/indexes/dense": {
+            "post": {
+                "tags": [
+                    "indexes"
+                ],
+                "summary": "Create a dense vector index for a collection",
+                "description": "Creates a new dense vector index for the specified collection",
+                "operationId": "create_dense_index",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateDenseIndexDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Dense index created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IndexResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Collection not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Index already exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/indexes/sparse": {
+            "post": {
+                "tags": [
+                    "indexes"
+                ],
+                "summary": "Create a sparse vector index for a collection",
+                "description": "Creates a new sparse vector index for the specified collection",
+                "operationId": "create_sparse_index",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateSparseIndexDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "Sparse index created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IndexResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Collection not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Index already exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/indexes/tf-idf": {
+            "post": {
+                "tags": [
+                    "indexes"
+                ],
+                "summary": "Create a TF-IDF index for a collection",
+                "description": "Creates a new TF-IDF index for the specified collection",
+                "operationId": "create_tf_idf_index",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateTFIDFIndexDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "201": {
+                        "description": "TF-IDF index created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/IndexResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Collection not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Index already exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/indexes/{index_type}": {
+            "delete": {
+                "tags": [
+                    "indexes"
+                ],
+                "summary": "Delete an index from a collection",
+                "description": "Deletes the specified index from a collection",
+                "operationId": "delete_index",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "index_type",
+                        "in": "path",
+                        "description": "Type of index to delete (dense, sparse or tf_idf)",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/IndexType"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Index successfully deleted"
+                    },
+                    "404": {
+                        "description": "Collection or index not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/indexing_status": {
+            "get": {
+                "tags": [
+                    "collections"
+                ],
+                "summary": "Get collection indexing status",
+                "description": "Returns the indexing status of a collection.",
+                "operationId": "get_collection_indexing_status",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Collection indexing status",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CollectionIndexingStatusResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Collection not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/load": {
+            "post": {
+                "tags": [
+                    "collections"
+                ],
+                "summary": "Load collection into memory",
+                "description": "Loads a collection into memory for faster access.",
+                "operationId": "load_collection",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Collection loaded successfully"
+                    },
+                    "400": {
+                        "description": "Collection not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/search/batch-dense": {
+            "post": {
+                "tags": [
+                    "search"
+                ],
+                "summary": "Batch search using dense vector embeddings",
+                "description": "Performs multiple similarity searches using dense vector embeddings in a single request.",
+                "operationId": "batch_dense_search",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BatchDenseSearchRequestDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Batch search successfully completed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BatchSearchResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid filter or other request error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Collection not found",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/search/batch-sparse": {
+            "post": {
+                "tags": [
+                    "search"
+                ],
+                "summary": "Batch search using sparse vector embeddings",
+                "description": "Performs multiple similarity searches using sparse vector embeddings in a single request.",
+                "operationId": "batch_sparse_search",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BatchSparseSearchRequestDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Batch search successfully completed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BatchSearchResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Collection not found",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/search/batch-tf-idf": {
+            "post": {
+                "tags": [
+                    "search"
+                ],
+                "summary": "Batch search for similar documents using TF-IDF",
+                "description": "Performs multiple searches for similar documents using TF-IDF scoring in a single request.",
+                "operationId": "batch_tf_idf_search",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BatchSearchTFIDFDocumentsDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Batch TF-IDF search successfully completed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BatchSearchResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Collection not found",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/search/dense": {
+            "post": {
+                "tags": [
+                    "search"
+                ],
+                "summary": "Search using a dense vector embedding",
+                "description": "Performs a similarity search using dense vector embeddings with optional filtering.",
+                "operationId": "dense_search",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DenseSearchRequestDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Search successfully completed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SearchResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid filter or other request error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Collection not found",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/search/hybrid": {
+            "post": {
+                "tags": [
+                    "search"
+                ],
+                "summary": "Hybrid search combining different search approaches",
+                "description": "Performs a hybrid search combining multiple search strategies (dense/sparse/TFIDF).",
+                "operationId": "hybrid_search",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/HybridSearchRequestDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Hybrid search successfully completed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SearchResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Collection not found",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/search/sparse": {
+            "post": {
+                "tags": [
+                    "search"
+                ],
+                "summary": "Search using sparse vector embeddings",
+                "description": "Performs a similarity search using sparse vector embeddings.",
+                "operationId": "sparse_search",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SparseSearchRequestDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Search successfully completed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SearchResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Collection not found",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/search/tf-idf": {
+            "post": {
+                "tags": [
+                    "search"
+                ],
+                "summary": "Search for similar documents using TF-IDF",
+                "description": "Performs a search for similar documents using TF-IDF scoring.",
+                "operationId": "tf_idf_search",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FindSimilarTFIDFDocumentDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "TF-IDF search successfully completed",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SearchResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Collection not found",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "text/plain": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/streaming/upsert": {
+            "post": {
+                "tags": [
+                    "streaming"
+                ],
+                "summary": "Upsert vectors into a collection with a synchronous transaction",
+                "description": "This API provides a simplified way to upsert vectors without managing transaction lifecycle.\nA transaction is created, vectors are upserted, and the transaction is committed in a single request.",
+                "operationId": "upsert",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpsertDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Vectors upserted successfully"
+                    },
+                    "404": {
+                        "description": "Collection not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/streaming/vectors/{vector_id}": {
+            "delete": {
+                "tags": [
+                    "streaming"
+                ],
+                "summary": "Delete a vector by ID using a synchronous transaction",
+                "description": "This API provides a simplified way to delete a vector without managing transaction lifecycle.\nA transaction is created, vector is deleted, and the transaction is committed in a single request.",
+                "operationId": "delete_vector_by_id",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "vector_id",
+                        "in": "path",
+                        "description": "Vector ID to delete",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Vector deleted successfully"
+                    },
+                    "404": {
+                        "description": "Collection or vector not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/transactions": {
+            "post": {
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Create a new transaction for a collection",
+                "description": "Creates a new transaction for modifying vectors in a collection.",
+                "operationId": "create_transaction",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transaction created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateTransactionResponseDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed to create transaction"
+                    },
+                    "409": {
+                        "description": "There is an ongoing transaction"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/transactions/{transaction_id}/abort": {
+            "post": {
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Abort a transaction",
+                "description": "Aborts an ongoing transaction and discards all changes.",
+                "operationId": "abort_transaction",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "transaction_id",
+                        "in": "path",
+                        "description": "Transaction identifier",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Transaction ID"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Transaction aborted successfully"
+                    },
+                    "400": {
+                        "description": "Failed to abort transaction"
+                    },
+                    "404": {
+                        "description": "Transaction not found"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/transactions/{transaction_id}/commit": {
+            "post": {
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Commit a transaction",
+                "description": "Commits all changes in the transaction to the collection.",
+                "operationId": "commit_transaction",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "transaction_id",
+                        "in": "path",
+                        "description": "Transaction identifier",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Transaction ID"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Transaction committed successfully"
+                    },
+                    "400": {
+                        "description": "Failed to commit transaction"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/transactions/{transaction_id}/status": {
+            "get": {
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Get transaction status",
+                "description": "Gets the current status of a transaction.",
+                "operationId": "get_transaction_status",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "transaction_id",
+                        "in": "path",
+                        "description": "Transaction identifier",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Transaction ID"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transaction status retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TransactionStatus"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed to get transaction status"
+                    },
+                    "404": {
+                        "description": "Transaction not found"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/transactions/{transaction_id}/upsert": {
+            "post": {
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Upsert vectors in a transaction",
+                "description": "Creates or updates multiple vectors in a single operation as part of an ongoing transaction.",
+                "operationId": "upsert",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "transaction_id",
+                        "in": "path",
+                        "description": "Transaction identifier",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Transaction ID"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpsertDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Vectors upserted successfully"
+                    },
+                    "400": {
+                        "description": "Failed to upsert vectors"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/transactions/{transaction_id}/vectors": {
+            "post": {
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Create a vector in a transaction",
+                "description": "Creates a new vector as part of an ongoing transaction.",
+                "operationId": "create_vector_in_transaction",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "transaction_id",
+                        "in": "path",
+                        "description": "Transaction identifier",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Transaction ID"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateVectorDto"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Vector created successfully"
+                    },
+                    "400": {
+                        "description": "Failed to create vector"
+                    },
+                    "404": {
+                        "description": "Transaction not found"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/transactions/{transaction_id}/vectors/{vector_id}": {
+            "delete": {
+                "tags": [
+                    "transactions"
+                ],
+                "summary": "Delete a vector in a transaction",
+                "description": "Deletes a vector by its ID as part of an ongoing transaction.",
+                "operationId": "delete_vector_by_id",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "transaction_id",
+                        "in": "path",
+                        "description": "Transaction identifier",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/components/schemas/Transaction ID"
+                        }
+                    },
+                    {
+                        "name": "vector_id",
+                        "in": "path",
+                        "description": "Vector identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Vector deleted successfully"
+                    },
+                    "400": {
+                        "description": "Failed to delete vector"
+                    },
+                    "404": {
+                        "description": "Transaction or vector not found"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/unload": {
+            "post": {
+                "tags": [
+                    "collections"
+                ],
+                "summary": "Unload collection from memory",
+                "description": "Unloads a collection from memory.",
+                "operationId": "unload_collection",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Collection unloaded successfully"
+                    },
+                    "400": {
+                        "description": "Collection not found"
+                    },
+                    "500": {
+                        "description": "Server error"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/vectors/{vector_id}": {
+            "get": {
+                "tags": [
+                    "vectors"
+                ],
+                "summary": "Get a specific vector by ID",
+                "description": "Returns a vector with the specified ID from a collection.",
+                "operationId": "get_vector_by_id",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "vector_id",
+                        "in": "path",
+                        "description": "Vector identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The requested vector",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CreateVectorDto"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Vector not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "head": {
+                "tags": [
+                    "vectors"
+                ],
+                "summary": "Check if a vector exists",
+                "description": "Returns 200 OK if the vector exists, 404 if it doesn't.",
+                "operationId": "check_vector_existence",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "vector_id",
+                        "in": "path",
+                        "description": "Vector identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Vector exists"
+                    },
+                    "404": {
+                        "description": "Vector not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/vectors/{vector_id}/neighbors": {
+            "get": {
+                "tags": [
+                    "vectors"
+                ],
+                "summary": "Fetch similar vectors (neighbors) for a specific vector",
+                "description": "Returns vectors that are similar to the specified vector ID.",
+                "operationId": "fetch_vector_neighbors",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "Collection identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "vector_id",
+                        "in": "path",
+                        "description": "Vector identifier",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of similar vectors",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/SimilarVector"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Vector not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/versions": {
+            "get": {
+                "tags": [
+                    "versions"
+                ],
+                "summary": "List all versions of a collection",
+                "operationId": "list_versions",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of the collection",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of collection versions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VersionListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Collection not found"
+                    },
+                    "500": {
+                        "description": "Database error"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/versions/current": {
+            "get": {
+                "tags": [
+                    "versions"
+                ],
+                "summary": "Get the current version of a collection",
+                "operationId": "get_current_version",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of the collection",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Current collection version",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/CurrentVersionResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Collection not found"
+                    },
+                    "500": {
+                        "description": "Database error"
+                    }
+                }
+            }
+        },
+        "/vectordb/collections/{collection_id}/versions/current/{version_hash}": {
+            "put": {
+                "tags": [
+                    "versions"
+                ],
+                "summary": "Set the current version of a collection",
+                "operationId": "set_current_version",
+                "parameters": [
+                    {
+                        "name": "collection_id",
+                        "in": "path",
+                        "description": "ID of the collection",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "version_hash",
+                        "in": "path",
+                        "description": "Hash of the version to set as current",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Version set as current successfully"
+                    },
+                    "400": {
+                        "description": "Invalid version hash"
+                    },
+                    "404": {
+                        "description": "Collection not found"
+                    },
+                    "500": {
+                        "description": "Database error"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "BatchDenseSearchRequestDto": {
+                "type": "object",
+                "required": [
+                    "queries"
+                ],
+                "properties": {
+                    "queries": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BatchDenseSearchRequestQueryDto"
+                        }
+                    },
+                    "return_raw_text": {
+                        "type": "boolean"
+                    },
+                    "top_k": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0
+                    }
+                }
+            },
+            "BatchDenseSearchRequestQueryDto": {
+                "type": "object",
+                "required": [
+                    "vector"
+                ],
+                "properties": {
+                    "filter": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "vector": {
+                        "type": "array",
+                        "items": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    }
+                }
+            },
+            "BatchSearchResponseDto": {
+                "type": "object",
+                "required": [
+                    "responses"
+                ],
+                "properties": {
+                    "responses": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SearchResponseDto"
+                        }
+                    },
+                    "warning": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "BatchSearchTFIDFDocumentsDto": {
+                "type": "object",
+                "required": [
+                    "queries"
+                ],
+                "properties": {
+                    "queries": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "return_raw_text": {
+                        "type": "boolean"
+                    },
+                    "top_k": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0
+                    }
+                }
+            },
+            "BatchSparseSearchRequestDto": {
+                "type": "object",
+                "required": [
+                    "query_terms_list"
+                ],
+                "properties": {
+                    "early_terminate_threshold": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "float"
+                    },
+                    "query_terms_list": {
+                        "type": "array",
+                        "items": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "return_raw_text": {
+                        "type": "boolean"
+                    },
+                    "top_k": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0
+                    }
+                }
+            },
+            "Claims": {
+                "type": "object",
+                "required": [
+                    "exp",
+                    "iat",
+                    "username"
+                ],
+                "properties": {
+                    "exp": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0
+                    },
+                    "iat": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0
+                    },
+                    "username": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CollectionConfig": {
+                "type": "object",
+                "properties": {
+                    "max_vectors": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "replication_factor": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32",
+                        "minimum": 0
+                    }
+                }
+            },
+            "CollectionIndexingStatusResponse": {
+                "type": "object",
+                "required": [
+                    "collection_name",
+                    "total_transactions",
+                    "completed_transactions",
+                    "in_progress_transactions",
+                    "not_started_transactions",
+                    "total_records_indexed_completed",
+                    "average_rate_per_second_completed",
+                    "last_synced"
+                ],
+                "properties": {
+                    "average_rate_per_second_completed": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "collection_name": {
+                        "type": "string"
+                    },
+                    "completed_transactions": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "in_progress_transactions": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "last_synced": {
+                        "type": "string"
+                    },
+                    "not_started_transactions": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "total_records_indexed_completed": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0
+                    },
+                    "total_transactions": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    }
+                }
+            },
+            "CollectionWithVectorCountsDto": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "dense_vector",
+                    "sparse_vector",
+                    "tf_idf_options",
+                    "config",
+                    "store_raw_text",
+                    "vectors_count"
+                ],
+                "properties": {
+                    "config": {
+                        "$ref": "#/components/schemas/CollectionConfig"
+                    },
+                    "dense_vector": {
+                        "$ref": "#/components/schemas/DenseVectorOptions"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "sparse_vector": {
+                        "$ref": "#/components/schemas/SparseVectorOptions"
+                    },
+                    "store_raw_text": {
+                        "type": "boolean"
+                    },
+                    "tf_idf_options": {
+                        "$ref": "#/components/schemas/TFIDFOptions"
+                    },
+                    "vectors_count": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0
+                    }
+                }
+            },
+            "ConditionOp": {
+                "type": "string",
+                "enum": [
+                    "and",
+                    "or"
+                ]
+            },
+            "CreateCollectionDto": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "dense_vector",
+                    "sparse_vector",
+                    "tf_idf_options",
+                    "config"
+                ],
+                "properties": {
+                    "config": {
+                        "$ref": "#/components/schemas/CollectionConfig"
+                    },
+                    "dense_vector": {
+                        "$ref": "#/components/schemas/DenseVectorOptions"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "metadata_schema": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/MetadataSchemaParam"
+                            }
+                        ]
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "sparse_vector": {
+                        "$ref": "#/components/schemas/SparseVectorOptions"
+                    },
+                    "store_raw_text": {
+                        "type": "boolean"
+                    },
+                    "tf_idf_options": {
+                        "$ref": "#/components/schemas/TFIDFOptions"
+                    }
+                }
+            },
+            "CreateCollectionDtoResponse": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CreateDenseIndexDto": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "distance_metric_type",
+                    "quantization",
+                    "index"
+                ],
+                "properties": {
+                    "distance_metric_type": {
+                        "$ref": "#/components/schemas/DistanceMetricSchema"
+                    },
+                    "index": {
+                        "$ref": "#/components/schemas/DenseIndexParamsDto"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "quantization": {
+                        "$ref": "#/components/schemas/DenseIndexQuantizationDto"
+                    }
+                }
+            },
+            "CreateSessionDTO": {
+                "type": "object",
+                "description": "DTO for creating a user session (login)",
+                "required": [
+                    "username",
+                    "password"
+                ],
+                "properties": {
+                    "password": {
+                        "type": "string",
+                        "description": "Password for authentication"
+                    },
+                    "username": {
+                        "type": "string",
+                        "description": "Username for authentication"
+                    }
+                }
+            },
+            "CreateSparseIndexDto": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "quantization",
+                    "sample_threshold"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "quantization": {
+                        "$ref": "#/components/schemas/SparseIndexQuantization"
+                    },
+                    "sample_threshold": {
+                        "type": "integer",
+                        "minimum": 0
+                    }
+                }
+            },
+            "CreateTFIDFIndexDto": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "sample_threshold",
+                    "k1",
+                    "b"
+                ],
+                "properties": {
+                    "b": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "k1": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "sample_threshold": {
+                        "type": "integer",
+                        "minimum": 0
+                    }
+                }
+            },
+            "CreateTransactionResponseDto": {
+                "type": "object",
+                "required": [
+                    "transaction_id",
+                    "created_at"
+                ],
+                "properties": {
+                    "created_at": {
+                        "type": "string",
+                        "example": "2023-01-01T12:00:00Z"
+                    },
+                    "transaction_id": {
+                        "$ref": "#/components/schemas/Transaction ID"
+                    }
+                }
+            },
+            "CreateVectorDto": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "document_id",
+                    "metadata",
+                    "sparse_values"
+                ],
+                "properties": {
+                    "dense_values": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "type": "number",
+                            "format": "float"
+                        },
+                        "example": "[0.1, 0.2, 0.3]"
+                    },
+                    "document_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "metadata": {
+                        "type": [
+                            "object",
+                            "null"
+                        ]
+                    },
+                    "sparse_values": {
+                        "type": [
+                            "object",
+                            "null"
+                        ]
+                    },
+                    "text": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "CurrentVersionResponse": {
+                "type": "object",
+                "required": [
+                    "version_number",
+                    "vector_count"
+                ],
+                "properties": {
+                    "vector_count": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0
+                    },
+                    "version_number": {
+                        "$ref": "#/components/schemas/VersionNumber"
+                    }
+                }
+            },
+            "DataType": {
+                "type": "string",
+                "enum": [
+                    "binary",
+                    "quaternay",
+                    "octal",
+                    "u8",
+                    "f16",
+                    "f32"
+                ]
+            },
+            "DenseIndexInfo": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "algorithm",
+                    "distance_metric",
+                    "quantization",
+                    "params"
+                ],
+                "properties": {
+                    "algorithm": {
+                        "type": "string"
+                    },
+                    "distance_metric": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "params": {
+                        "$ref": "#/components/schemas/HnswParamsInfo"
+                    },
+                    "quantization": {
+                        "$ref": "#/components/schemas/QuantizationInfo"
+                    }
+                }
+            },
+            "DenseIndexParamsDto": {
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "required": [
+                            "properties",
+                            "type"
+                        ],
+                        "properties": {
+                            "properties": {
+                                "$ref": "#/components/schemas/HNSWHyperParamsDto"
+                            },
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "hnsw"
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            "DenseIndexQuantizationDto": {
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "required": [
+                            "properties",
+                            "type"
+                        ],
+                        "properties": {
+                            "properties": {
+                                "type": "object",
+                                "required": [
+                                    "sample_threshold"
+                                ],
+                                "properties": {
+                                    "sample_threshold": {
+                                        "type": "integer",
+                                        "minimum": 0
+                                    }
+                                }
+                            },
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "auto"
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        "type": "object",
+                        "required": [
+                            "properties",
+                            "type"
+                        ],
+                        "properties": {
+                            "properties": {
+                                "type": "object",
+                                "required": [
+                                    "data_type",
+                                    "range"
+                                ],
+                                "properties": {
+                                    "data_type": {
+                                        "$ref": "#/components/schemas/DataType"
+                                    },
+                                    "range": {
+                                        "$ref": "#/components/schemas/ValuesRange"
+                                    }
+                                }
+                            },
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "scalar"
+                                ]
+                            }
+                        }
+                    }
+                ]
+            },
+            "DenseSearchRequestDto": {
+                "type": "object",
+                "required": [
+                    "query_vector"
+                ],
+                "properties": {
+                    "filter": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "query_vector": {
+                        "type": "array",
+                        "items": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    "return_raw_text": {
+                        "type": "boolean"
+                    },
+                    "top_k": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0
+                    }
+                }
+            },
+            "DenseVectorOptions": {
+                "type": "object",
+                "required": [
+                    "enabled",
+                    "dimension"
+                ],
+                "properties": {
+                    "dimension": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "enabled": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "DistanceMetricSchema": {
+                "type": "string",
+                "enum": [
+                    "cosine",
+                    "euclidean",
+                    "hamming",
+                    "dot_product"
+                ]
+            },
+            "FindSimilarTFIDFDocumentDto": {
+                "type": "object",
+                "required": [
+                    "query"
+                ],
+                "properties": {
+                    "query": {
+                        "type": "string"
+                    },
+                    "return_raw_text": {
+                        "type": "boolean"
+                    },
+                    "top_k": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0
+                    }
+                }
+            },
+            "GetCollectionsDto": {
+                "type": "object"
+            },
+            "GetCollectionsResponseDto": {
+                "type": "object",
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "HNSWHyperParamsDto": {
+                "type": "object",
+                "properties": {
+                    "ef_construction": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "ef_search": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "level_0_neighbors_count": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0
+                    },
+                    "max_cache_size": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0
+                    },
+                    "neighbors_count": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0
+                    },
+                    "num_layers": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32",
+                        "minimum": 0
+                    }
+                }
+            },
+            "HnswParamsInfo": {
+                "type": "object",
+                "required": [
+                    "ef_construction",
+                    "ef_search",
+                    "neighbors_count",
+                    "level_0_neighbors_count",
+                    "num_layers"
+                ],
+                "properties": {
+                    "ef_construction": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "ef_search": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "level_0_neighbors_count": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "neighbors_count": {
+                        "type": "integer",
+                        "minimum": 0
+                    },
+                    "num_layers": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    }
+                }
+            },
+            "HybridSearchQuery": {
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "required": [
+                            "query_vector",
+                            "query_terms"
+                        ],
+                        "properties": {
+                            "query_terms": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "query_vector": {
+                                "type": "array",
+                                "items": {
+                                    "type": "number",
+                                    "format": "float"
+                                }
+                            },
+                            "sparse_early_terminate_threshold": {
+                                "type": [
+                                    "number",
+                                    "null"
+                                ],
+                                "format": "float"
+                            }
+                        }
+                    },
+                    {
+                        "type": "object",
+                        "required": [
+                            "query_vector",
+                            "query_text"
+                        ],
+                        "properties": {
+                            "query_text": {
+                                "type": "string"
+                            },
+                            "query_vector": {
+                                "type": "array",
+                                "items": {
+                                    "type": "number",
+                                    "format": "float"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "type": "object",
+                        "required": [
+                            "query_terms",
+                            "query_text"
+                        ],
+                        "properties": {
+                            "query_terms": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "query_text": {
+                                "type": "string"
+                            },
+                            "sparse_early_terminate_threshold": {
+                                "type": [
+                                    "number",
+                                    "null"
+                                ],
+                                "format": "float"
+                            }
+                        }
+                    }
+                ]
+            },
+            "HybridSearchRequestDto": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/HybridSearchQuery"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "fusion_constant_k": {
+                                "type": "number",
+                                "format": "float"
+                            },
+                            "return_raw_text": {
+                                "type": "boolean"
+                            },
+                            "top_k": {
+                                "type": "integer",
+                                "minimum": 0
+                            }
+                        }
+                    }
+                ]
+            },
+            "IndexDetailsDto": {
+                "type": "object",
+                "required": [
+                    "collection_name",
+                    "indexes"
+                ],
+                "properties": {
+                    "collection_name": {
+                        "type": "string"
+                    },
+                    "indexes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/IndexInfo"
+                        }
+                    }
+                }
+            },
+            "IndexInfo": {
+                "oneOf": [
+                    {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/DenseIndexInfo"
+                            },
+                            {
+                                "type": "object",
+                                "required": [
+                                    "type"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "dense"
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/SparseIndexInfo"
+                            },
+                            {
+                                "type": "object",
+                                "required": [
+                                    "type"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "sparse"
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/TfIdfIndexInfo"
+                            },
+                            {
+                                "type": "object",
+                                "required": [
+                                    "type"
+                                ],
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "tf_idf"
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+            "IndexResponseDto": {
+                "type": "object",
+                "required": [
+                    "message"
+                ],
+                "properties": {
+                    "message": {
+                        "type": "string"
+                    }
+                }
+            },
+            "IndexType": {
+                "type": "string",
+                "enum": [
+                    "dense",
+                    "sparse",
+                    "tf_idf"
+                ]
+            },
+            "MetadataField": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "values"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "values": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "example": "[\"value1\", \"value2\", 123]"
+                    }
+                }
+            },
+            "MetadataSchemaParam": {
+                "type": "object",
+                "required": [
+                    "fields",
+                    "supported_conditions"
+                ],
+                "properties": {
+                    "fields": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MetadataField"
+                        }
+                    },
+                    "supported_conditions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SupportedCondition"
+                        }
+                    }
+                }
+            },
+            "ProcessingStats": {
+                "type": "object",
+                "required": [
+                    "records_upserted",
+                    "records_deleted",
+                    "total_operations",
+                    "percentage_complete"
+                ],
+                "properties": {
+                    "average_throughput": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "float"
+                    },
+                    "current_processing_rate": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "float"
+                    },
+                    "estimated_completion": {
+                        "type": "string",
+                        "example": "2023-01-01T12:00:00Z"
+                    },
+                    "percentage_complete": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "processing_time_seconds": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "records_deleted": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "records_upserted": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "total_operations": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "version_created": {
+                        "oneOf": [
+                            {
+                                "type": "null"
+                            },
+                            {
+                                "$ref": "#/components/schemas/VersionNumber"
+                            }
+                        ]
+                    }
+                }
+            },
+            "Progress": {
+                "type": "object",
+                "required": [
+                    "percentage_done",
+                    "records_indexed",
+                    "total_records",
+                    "rate_per_second",
+                    "estimated_time_remaining_seconds"
+                ],
+                "properties": {
+                    "estimated_time_remaining_seconds": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "percentage_done": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "rate_per_second": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "records_indexed": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "total_records": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    }
+                }
+            },
+            "QuantizationInfo": {
+                "type": "object",
+                "required": [
+                    "type",
+                    "storage",
+                    "range"
+                ],
+                "properties": {
+                    "range": {
+                        "$ref": "#/components/schemas/RangeInfo"
+                    },
+                    "storage": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                }
+            },
+            "RangeInfo": {
+                "type": "object",
+                "required": [
+                    "min",
+                    "max"
+                ],
+                "properties": {
+                    "max": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "min": {
+                        "type": "number",
+                        "format": "float"
+                    }
+                }
+            },
+            "SearchResponseDto": {
+                "type": "object",
+                "required": [
+                    "results"
+                ],
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SearchResultItemDto"
+                        }
+                    },
+                    "warning": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "SearchResultItemDto": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "score"
+                ],
+                "properties": {
+                    "document_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "score": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "text": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    }
+                }
+            },
+            "Session": {
+                "type": "object",
+                "description": "Session response after successful authentication",
+                "required": [
+                    "access_token",
+                    "created_at",
+                    "expires_at"
+                ],
+                "properties": {
+                    "access_token": {
+                        "type": "string",
+                        "description": "Authentication token for subsequent requests"
+                    },
+                    "created_at": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Timestamp when the session was created",
+                        "minimum": 0
+                    },
+                    "expires_at": {
+                        "type": "integer",
+                        "format": "int64",
+                        "description": "Timestamp when the session will expire",
+                        "minimum": 0
+                    }
+                }
+            },
+            "SimilarVector": {
+                "type": "object",
+                "required": [
+                    "id",
+                    "score"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "score": {
+                        "type": "number",
+                        "format": "float"
+                    }
+                }
+            },
+            "SparseIndexInfo": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "algorithm",
+                    "quantization_bits",
+                    "values_upper_bound"
+                ],
+                "properties": {
+                    "algorithm": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "quantization_bits": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "values_upper_bound": {
+                        "type": "number",
+                        "format": "float"
+                    }
+                }
+            },
+            "SparseIndexQuantization": {
+                "type": "string",
+                "enum": [
+                    "B16",
+                    "B32",
+                    "B64",
+                    "B128",
+                    "B256"
+                ]
+            },
+            "SparseSearchRequestDto": {
+                "type": "object",
+                "required": [
+                    "query_terms"
+                ],
+                "properties": {
+                    "early_terminate_threshold": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "format": "float"
+                    },
+                    "query_terms": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "return_raw_text": {
+                        "type": "boolean"
+                    },
+                    "top_k": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0
+                    }
+                }
+            },
+            "SparseVectorOptions": {
+                "type": "object",
+                "required": [
+                    "enabled"
+                ],
+                "properties": {
+                    "enabled": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "Summary": {
+                "type": "object",
+                "required": [
+                    "total_records_indexed",
+                    "duration_seconds",
+                    "average_rate_per_second"
+                ],
+                "properties": {
+                    "average_rate_per_second": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "duration_seconds": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    },
+                    "total_records_indexed": {
+                        "type": "integer",
+                        "format": "int32",
+                        "minimum": 0
+                    }
+                }
+            },
+            "SupportedCondition": {
+                "type": "object",
+                "required": [
+                    "op",
+                    "field_names"
+                ],
+                "properties": {
+                    "field_names": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "op": {
+                        "$ref": "#/components/schemas/ConditionOp"
+                    }
+                }
+            },
+            "TFIDFOptions": {
+                "type": "object",
+                "required": [
+                    "enabled"
+                ],
+                "properties": {
+                    "enabled": {
+                        "type": "boolean"
+                    }
+                }
+            },
+            "TfIdfIndexInfo": {
+                "type": "object",
+                "required": [
+                    "name",
+                    "algorithm",
+                    "k1",
+                    "b"
+                ],
+                "properties": {
+                    "algorithm": {
+                        "type": "string"
+                    },
+                    "b": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "k1": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Transaction ID": {
+                "type": "string"
+            },
+            "TransactionStatus": {
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "required": [
+                            "NotStarted"
+                        ],
+                        "properties": {
+                            "NotStarted": {
+                                "type": "object",
+                                "required": [
+                                    "last_updated"
+                                ],
+                                "properties": {
+                                    "last_updated": {
+                                        "type": "string",
+                                        "example": "2023-01-01T12:00:00Z"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "type": "object",
+                        "required": [
+                            "InProgress"
+                        ],
+                        "properties": {
+                            "InProgress": {
+                                "type": "object",
+                                "required": [
+                                    "stats",
+                                    "started_at",
+                                    "last_updated"
+                                ],
+                                "properties": {
+                                    "last_updated": {
+                                        "type": "string",
+                                        "example": "2023-01-01T12:00:00Z"
+                                    },
+                                    "started_at": {
+                                        "type": "string",
+                                        "example": "2023-01-01T12:00:00Z"
+                                    },
+                                    "stats": {
+                                        "$ref": "#/components/schemas/ProcessingStats"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "type": "object",
+                        "required": [
+                            "Complete"
+                        ],
+                        "properties": {
+                            "Complete": {
+                                "type": "object",
+                                "required": [
+                                    "stats",
+                                    "started_at",
+                                    "completed_at"
+                                ],
+                                "properties": {
+                                    "completed_at": {
+                                        "type": "string",
+                                        "example": "2023-01-01T12:00:00Z"
+                                    },
+                                    "started_at": {
+                                        "type": "string",
+                                        "example": "2023-01-01T12:00:00Z"
+                                    },
+                                    "stats": {
+                                        "$ref": "#/components/schemas/ProcessingStats"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
+            },
+            "UpsertDto": {
+                "type": "object",
+                "required": [
+                    "vectors"
+                ],
+                "properties": {
+                    "vectors": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/CreateVectorDto"
+                        }
+                    }
+                }
+            },
+            "ValuesRange": {
+                "type": "object",
+                "required": [
+                    "min",
+                    "max"
+                ],
+                "properties": {
+                    "max": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "min": {
+                        "type": "number",
+                        "format": "float"
+                    }
+                }
+            },
+            "VectorsQueryDto": {
+                "type": "object",
+                "required": [
+                    "document_id"
+                ],
+                "properties": {
+                    "document_id": {
+                        "type": "string",
+                        "example": "doc123"
+                    }
+                }
+            },
+            "VersionListResponse": {
+                "type": "object",
+                "required": [
+                    "versions",
+                    "current_version"
+                ],
+                "properties": {
+                    "current_version": {
+                        "$ref": "#/components/schemas/VersionNumber"
+                    },
+                    "versions": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/VersionMetadata"
+                        }
+                    }
+                }
+            },
+            "VersionMetadata": {
+                "type": "object",
+                "required": [
+                    "version_number",
+                    "vector_count"
+                ],
+                "properties": {
+                    "vector_count": {
+                        "type": "integer",
+                        "format": "int64",
+                        "minimum": 0
+                    },
+                    "version_number": {
+                        "$ref": "#/components/schemas/VersionNumber"
+                    }
+                }
+            },
+            "VersionNumber": {
+                "type": "integer",
+                "format": "int32",
+                "description": "Version number",
+                "minimum": 0
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "auth",
+            "description": "Authentication endpoints"
+        },
+        {
+            "name": "collections",
+            "description": "Collection management endpoints"
+        },
+        {
+            "name": "indexes",
+            "description": "Index management endpoints"
+        },
+        {
+            "name": "search",
+            "description": "Vector search endpoints"
+        },
+        {
+            "name": "vectors",
+            "description": "Vector management endpoints"
+        },
+        {
+            "name": "versions",
+            "description": "Version management endpoints"
+        },
+        {
+            "name": "transactions",
+            "description": "Transaction management endpoints"
+        },
+        {
+            "name": "streaming",
+            "description": "Streaming endpoints"
+        }
+    ]
+}

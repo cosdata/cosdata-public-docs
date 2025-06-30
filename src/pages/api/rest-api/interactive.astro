@@ -1,0 +1,258 @@
+---
+// Interactive API Reference page using Scalar
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Interactive API Reference - Cosdata</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Interactive API reference for Cosdata Vector Database"
+    />
+    <link rel="icon" href="/favicon/favicon.ico" type="image/x-icon" />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+      }
+      #api-reference {
+        width: 100%;
+        height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="api-reference">
+      <!-- Loading indicator inside the main container -->
+      <div
+        id="loading"
+        style="
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        height: 100vh; 
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #666;
+      "
+      >
+        <div style="text-align: center;">
+          <div style="margin-bottom: 20px; font-size: 18px;">
+            Loading API Reference...
+          </div>
+          <div
+            style="
+            width: 40px; 
+            height: 40px; 
+            border: 4px solid #f3f3f3; 
+            border-top: 4px solid #3498db; 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+          "
+          >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+
+    <script>
+      // Function to initialize Scalar
+      function initializeScalar() {
+        console.log("Attempting to initialize Scalar...");
+        console.log("Scalar available:", !!(window as any).Scalar);
+
+        try {
+          const ScalarLib = (window as any).Scalar;
+          if (ScalarLib && typeof ScalarLib.createApiReference === "function") {
+            // Clear the loading content and use the container for Scalar
+            const container = document.getElementById("api-reference");
+            if (container) {
+              container.innerHTML = ""; // Clear loading content
+            }
+
+            ScalarLib.createApiReference("#api-reference", {
+              // Path to your OpenAPI document
+              url: "/docs/openapi.json",
+              // Configuration options
+              metaData: {
+                title: "Cosdata API Reference",
+                description:
+                  "Interactive API documentation for Cosdata Vector Database",
+              },
+              // Use system theme to follow user's OS preference
+              theme: "system",
+              // Show the sidebar
+              showSidebar: true,
+              // Enable search
+              searchHotKey: "k",
+              // Dark mode support
+              darkMode: true,
+              // Use default fonts
+              withDefaultFonts: false,
+              // Custom styling with Cosdata branding
+              customCss: `
+                :root {
+                  --scalar-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                  --scalar-font-code: 'JetBrains Mono', 'Monaco', 'Consolas', monospace;
+                }
+                
+                /* Custom dark mode theme with #17181c */
+                .dark-mode {
+                  --scalar-color-1: rgba(255, 255, 255, 0.9);
+                  --scalar-color-2: rgba(255, 255, 255, 0.7);
+                  --scalar-color-3: rgba(255, 255, 255, 0.5);
+                  --scalar-color-accent: #2673ff;
+                  --scalar-background-1: #17181c;
+                  --scalar-background-2: #1e1f24;
+                  --scalar-background-3: #26272d;
+                  --scalar-background-accent: #2673ff1f;
+                  --scalar-border-color: rgba(255, 255, 255, 0.1);
+                }
+                
+                /* Dark mode sidebar styling */
+                .dark-mode .sidebar {
+                  --scalar-sidebar-background-1: #17181c;
+                  --scalar-sidebar-item-hover-color: currentColor;
+                  --scalar-sidebar-item-hover-background: #1e1f24;
+                  --scalar-sidebar-item-active-background: #26272d;
+                  --scalar-sidebar-border-color: rgba(255, 255, 255, 0.1);
+                  --scalar-sidebar-color-1: rgba(255, 255, 255, 0.9);
+                  --scalar-sidebar-color-2: rgba(255, 255, 255, 0.7);
+                  --scalar-sidebar-color-active: rgba(255, 255, 255, 0.9);
+                  --scalar-sidebar-search-background: #1e1f24;
+                  --scalar-sidebar-search-border-color: rgba(255, 255, 255, 0.1);
+                  --scalar-sidebar-search-color: rgba(255, 255, 255, 0.5);
+                }
+                
+                /* Cosdata brand colors */
+                h1 {
+                  color: #ff3366 !important;
+                  font-weight: 700 !important;
+                }
+                
+                h2 {
+                  color: #2673ff !important;
+                  font-weight: 600 !important;
+                }
+                
+                .button--primary {
+                  background-color: #2673ff !important;
+                  color: white !important;
+                  font-weight: 600 !important;
+                  border-radius: 8px !important;
+                  transition: background-color 0.2s ease !important;
+                }
+                
+                .button--primary:hover {
+                  background-color: #ff3366 !important;
+                }
+                
+                /* Apply Cosdata font styling */
+                * {
+                  font-family: var(--scalar-font) !important;
+                }
+                
+                code, pre {
+                  font-family: var(--scalar-font-code) !important;
+                }
+              `,
+            });
+            console.log("Scalar initialized successfully");
+          } else {
+            console.error(
+              "Scalar not available or createApiReference method not found"
+            );
+            showError(
+              "Failed to load API reference. Please try refreshing the page."
+            );
+          }
+        } catch (error: any) {
+          console.error("Error initializing Scalar:", error);
+          showError(
+            `Error loading API reference: ${error?.message || "Unknown error"}`
+          );
+        }
+      }
+
+      // Function to show error message
+      function showError(message: string) {
+        const container = document.getElementById("api-reference");
+        if (container) {
+          container.innerHTML = `
+            <div style="
+              display: flex; 
+              align-items: center; 
+              justify-content: center; 
+              height: 100vh; 
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+              color: #e74c3c;
+              text-align: center;
+            ">
+              <div>
+                <h2>Error Loading API Reference</h2>
+                <p>${message}</p>
+                <button onclick="location.reload()" style="
+                  background: #3498db; 
+                  color: white; 
+                  border: none; 
+                  padding: 10px 20px; 
+                  border-radius: 5px; 
+                  cursor: pointer;
+                ">Retry</button>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      // Wait for both DOM and script to load
+      let domReady = false;
+      let scriptReady = false;
+
+      document.addEventListener("DOMContentLoaded", () => {
+        domReady = true;
+        if (scriptReady) initializeScalar();
+      });
+
+      // Check if Scalar is already available or wait for it
+      function checkScalar() {
+        if ((window as any).Scalar) {
+          scriptReady = true;
+          if (domReady) initializeScalar();
+        } else {
+          setTimeout(checkScalar, 100);
+        }
+      }
+
+      // Start checking for Scalar
+      checkScalar();
+
+      // Fallback timeout
+      setTimeout(() => {
+        if (!(window as any).Scalar) {
+          showError(
+            "Timeout loading Scalar library. Please check your internet connection and try again."
+          );
+        }
+      }, 10000);
+    </script>
+  </body>
+</html>
