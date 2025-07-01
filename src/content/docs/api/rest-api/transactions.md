@@ -3,7 +3,15 @@ title: Transactions API
 description: Transaction management endpoints for the Cosdata vector database
 ---
 
-The database uses transactions to maintain data consistency during batch operations. Transactions must be explicitly created, managed, and committed or aborted.
+Cosdata uses transactions (atomic operations) for batch operations. This is ideal for importing large, logically cohesive datasets where partial imports would compromise data integrity.
+
+Transactions are managed resources with a defined lifecycle: open → operate → commit/abort. They provide all-or-nothing semantics with rollback capability. All data modifications within a transaction are buffered and applied in a single atomic operation upon commit.
+
+**Commit = atomic**
+
+**Indexing = background process**
+
+Once a transaction is committed, the system begins indexing the data in the background. You can monitor the progress of a transaction using the status endpoint.
 
 ## Create Transaction
 
@@ -39,14 +47,60 @@ Creates a new transaction for batch operations on a collection.
 |------|----------------------------------------------------|
 | 200  | Success. Transaction created successfully.          |
 | 400  | Bad Request. Collection not found or invalid parameters. |
-| 409  | Conflict. There is already an ongoing transaction for this collection. |
+| 409  | Conflict. There is an ongoing transaction for this collection. |
 | 500  | Server Error. Failed to create transaction.         |
+
+---
+
+## Get Transaction Status
+
+Gets the current status of a transaction, which is useful for monitoring the progress of background indexing after commit.
+
+**Endpoint:** `GET /vectordb/collections/{collection_id}/transactions/{transaction_id}/status`
+
+**URL Parameters:**
+
+| Parameter      | Type   | Required | Description                        |
+|---------------|--------|----------|------------------------------------|
+| collection_id  | string | Yes      | ID (name) of the collection containing the transaction. |
+| transaction_id | string | Yes      | ID of the transaction to get the status for.   |
+
+**Response:**
+
+```json
+{
+  "status": {
+    "Complete": {
+      "started_at": "2023-01-01T12:00:00Z",
+      "completed_at": "2023-01-01T12:00:00Z",
+      "stats": {
+        "records_upserted": 1000,
+        "records_deleted": 0,
+        "total_operations": 5,
+        "percentage_complete": 100.0,
+        "processing_time_seconds": 120,
+        "average_throughput": 8.33,
+        "version_created": 42
+      }
+    }
+  }
+}
+```
+
+**Status Codes:**
+
+| Code | Description                                        |
+|------|----------------------------------------------------|
+| 200  | Success. Transaction status retrieved successfully. |
+| 400  | Bad Request. Collection or transaction not found.  |
+| 404  | Not Found. Transaction not found.                  |
+| 500  | Server Error. Failed to get transaction status.    |
 
 ---
 
 ## Commit Transaction
 
-Commits a transaction, making all changes permanent.
+Commits a transaction, making all changes permanent. The commit is atomic. Use the `Get Transaction Status` endpoint to monitor background indexing progress.
 
 **Endpoint:** `POST /vectordb/collections/{collection_id}/transactions/{transaction_id}/commit`
 
@@ -61,7 +115,7 @@ Commits a transaction, making all changes permanent.
 
 | Code | Description                                        |
 |------|----------------------------------------------------|
-| 204  | No Content. Transaction committed successfully.     |
+| 204  | No Content. Transaction commit accepted for processing. |
 | 400  | Bad Request. Collection or transaction not found or invalid parameters. |
 | 500  | Server Error. Failed to commit transaction.         |
 
@@ -111,7 +165,8 @@ Adds a single vector to a transaction.
     "document_id": "optional_document_id",
     "dense_values": [0.1, 0.2, 0.3, ...],
     "sparse_values": null,
-    "text": "Optional text content"
+    "text": "Optional text content",
+    "metadata": { "key": "value" }
   }
   ```
 
@@ -121,7 +176,8 @@ Adds a single vector to a transaction.
     "document_id": "optional_document_id",
     "sparse_indices": [1, 5, 10, 100],
     "sparse_values": [0.5, 0.3, 0.2, 0.1],
-    "text": "Optional text content"
+    "text": "Optional text content",
+    "metadata": { "key": "value" }
   }
   ```
 
@@ -129,7 +185,8 @@ Adds a single vector to a transaction.
   {
     "id": "vector_id",
     "document_id": "optional_document_id",
-    "text": "Document text content for TF-IDF/BM25 indexing"
+    "text": "Document text content for TF-IDF/BM25 indexing",
+    "metadata": { "key": "value" }
   }
   ```
 
@@ -143,6 +200,7 @@ Adds a single vector to a transaction.
 | sparse_indices   | array  | No*      | Indices for sparse vector.         |
 | sparse_values    | array  | No*      | Values for sparse vector.          |
 | text             | string | No*      | Text content.                      |
+| metadata         | object | No       | Optional key-value metadata.       |
 
 *At least one of dense_values, sparse_indices/sparse_values, or text must be provided for each vector.
 
@@ -202,6 +260,7 @@ Inserts or updates multiple vectors in a transaction in a single batch operation
 | vectors[].sparse_indices| array| No*     | Indices for sparse vector.         |
 | vectors[].sparse_values| array| No*      | Values for sparse vector.          |
 | vectors[].text       | string | No*      | Text content.                      |
+| vectors[].metadata   | object | No       | Optional key-value metadata for each vector. |
 
 *At least one of dense_values, sparse_indices/sparse_values, or text must be provided for each vector.
 
@@ -235,4 +294,4 @@ Deletes a vector from a transaction.
 |------|----------------------------------------------------|
 | 204  | No Content. Vector deleted successfully.            |
 | 400  | Bad Request. Collection, transaction, or vector not found. |
-| 500  | Server Error. Failed to delete vector.              | 
+| 500  | Server Error. Failed to delete vector.              |

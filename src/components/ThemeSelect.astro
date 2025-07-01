@@ -4,14 +4,14 @@
   <option value="dark">Dark</option>
 </select>
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const select = document.getElementById('theme-select');
+  document.addEventListener("DOMContentLoaded", () => {
+    const select = document.getElementById("theme-select") as HTMLSelectElement;
     if (!select) return;
-    select.value = localStorage.getItem('theme') || 'auto';
-    select.addEventListener('change', (e) => {
-      const theme = e.target.value;
-      localStorage.setItem('theme', theme);
-      document.documentElement.dataset.theme = theme === 'auto' ? '' : theme;
+    select.value = localStorage.getItem("theme") || "auto";
+    select.addEventListener("change", (e) => {
+      const theme = (e.target as HTMLSelectElement).value;
+      localStorage.setItem("theme", theme);
+      document.documentElement.dataset.theme = theme === "auto" ? "" : theme;
     });
   });
-</script> 
+</script>

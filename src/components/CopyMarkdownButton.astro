@@ -2,10 +2,7 @@
 // Simple button component that copies the markdown URL
 ---
 
-<button
-  id="copyMarkdown"
-  class="copy-markdown-button"
->
+<button id="copyMarkdown" class="copy-markdown-button">
   Copy Markdown URL
 </button>
 
@@ -30,28 +27,29 @@
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const button = document.getElementById('copyMarkdown');
+  document.addEventListener("DOMContentLoaded", () => {
+    const button = document.getElementById("copyMarkdown");
     if (!button) return;
 
-    button.addEventListener('click', async () => {
+    button.addEventListener("click", async () => {
       try {
         const currentUrl = window.location.href;
-        const markdownUrl = currentUrl.replace(/\/$/, '') + '/md';
+        const markdownUrl = currentUrl.replace(/\/$/, "") + "/md";
         await navigator.clipboard.writeText(markdownUrl);
-        
+
         const originalText = button.textContent;
-        button.textContent = 'URL Copied!';
+        button.textContent = "URL Copied!";
         setTimeout(() => {
           button.textContent = originalText;
         }, 2000);
       } catch (err) {
-        console.error('Failed to copy URL:', err);
-        button.textContent = 'Failed to copy';
+        console.error("Failed to copy URL:", err);
+        button.textContent = "Failed to copy";
         setTimeout(() => {
-          button.textContent = 'Copy Markdown URL';
+          button.textContent = "Copy Markdown URL";
         }, 2000);
       }
     });
   });
-</script> 
+</script>
+
