@@ -5,7 +5,7 @@ description: Endpoints for querying and retrieving vectors in the Cosdata vector
 ---
 
 
-> **Note:** To add vectors to the database, use the [Transactions API](./transactions.md). The endpoints below are for querying and retrieving vectors only.
+> **Note:** To add vectors to the database, use the [Transactions API](/api/rest-api/transactions/). The endpoints below are for querying and retrieving vectors only.
 
 ---
 
