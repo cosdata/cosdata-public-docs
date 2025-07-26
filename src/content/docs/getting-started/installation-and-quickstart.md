@@ -27,7 +27,7 @@ For **Mac & Windows** users, we recommend using our Docker-based installation:
 1. Ensure **Docker** is installed and running
 2. Pull the latest image from Docker Hub:
 ```bash
-docker pull cosdatateam/cosdata:latest
+docker pull cosdataio/cosdata:latest
 ```
 
 3. Run the container:
@@ -36,7 +36,7 @@ docker run -it \
   --name cosdata-server \
   -p 8443:8443 \
   -p 50051:50051 \
-  cosdatateam/cosdata:latest
+  cosdataio/cosdata:latest
 ```
 
 The server will be available at `http://localhost:8443`.
@@ -282,7 +282,7 @@ Let's create a simple collection and add some vectors using the Python SDK:
 
 First, install the Cosdata Python client:
 ```bash
-pip install cosdata-client
+pip install cosdata-sdk
 ```
 
 Then, create a new Python script with the following code:
