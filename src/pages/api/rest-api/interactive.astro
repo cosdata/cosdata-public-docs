@@ -97,6 +97,13 @@
                 description:
                   "Interactive API documentation for Cosdata Vector Database",
               },
+              // Set default server to localhost:8443
+              servers: [
+                {
+                  url: "http://localhost:8443",
+                  description: "Cosdata Vector Database API"
+                }
+              ],
               // Use system theme to follow user's OS preference
               theme: "system",
               // Show the sidebar

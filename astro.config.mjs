@@ -98,6 +98,10 @@ export default defineConfig({
               label: "Generating Embeddings",
               link: "/guides/generating-embeddings/",
             },
+            {
+              label: "Associating Vectors with Documents",
+              link: "/guides/using-document-id/",
+            },
           ],
         },
       ],
