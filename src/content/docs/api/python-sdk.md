@@ -12,7 +12,7 @@ A Python SDK for interacting with the Cosdata Vector Database.
 You can install the Cosdata Python SDK from [PyPI](https://pypi.org/project/cosdata-client/):
 
 ```bash
-pip install cosdata-client
+pip install cosdata-sdk
 ```
 
 ## Basic Usage
