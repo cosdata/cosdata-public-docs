@@ -13,7 +13,7 @@ This document provides an overview of the Cosdata vector database REST API, whic
 
 The base URL for all API endpoints is: `https://host:port/vectordb`
 
-For detailed authentication information, see [Authentication](rest-api/authentication.md).
+For detailed authentication information, see [Authentication](/api/rest-api/authentication/).
 
 ## API Endpoints
 
@@ -23,25 +23,25 @@ The API is organized into the following sections:
 
 Collection management endpoints for creating, listing, and managing vector collections.
 
-[View Collections API Documentation](rest-api/collections.md)
+[View Collections API Documentation](/api/rest-api/collections/)
 
 ### Transactions
 
 Transaction management endpoints for performing atomic operations on vectors.
 
-[View Transactions API Documentation](rest-api/transactions.md)
+[View Transactions API Documentation](/api/rest-api/transactions/)
 
 ### Search
 
 Search endpoints for performing vector similarity search and text search.
 
-[View Search API Documentation](rest-api/search.md)
+[View Search API Documentation](/api/rest-api/search/)
 
 ### Index Management
 
 Index management endpoints for optimizing search performance.
 
-[View Index Management API Documentation](rest-api/indexes.md)
+[View Index Management API Documentation](/api/rest-api/indexes/)
 
 ## Best Practices
 

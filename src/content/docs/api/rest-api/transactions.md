@@ -249,13 +249,14 @@ Inserts or updates multiple vectors in a transaction in a single batch operation
   }
   ```
 
+
 **Request Parameters:**
 
 | Parameter            | Type   | Required | Description                        |
 |----------------------|--------|----------|------------------------------------| 
 | vectors              | array  | Yes      | Array of vector objects to upsert. |
 | vectors[].id         | string | Yes      | Unique identifier for each vector. |
-| vectors[].document_id| string | No       | Optional document identifier for each vector. |
+| vectors[].document_id| string | No       | Optional document identifier for each vector. See the [guide on associating vectors with documents](../../guides/using-document-id) for use cases and best practices. |
 | vectors[].dense_values| array | No*      | Dense vector values.               |
 | vectors[].sparse_indices| array| No*     | Indices for sparse vector.         |
 | vectors[].sparse_values| array| No*      | Values for sparse vector.          |
